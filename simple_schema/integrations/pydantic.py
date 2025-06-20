@@ -312,6 +312,32 @@ def validate_pydantic_compatibility(fields: Dict[str, SimpleField]) -> Dict[str,
     return result
 
 
+def string_to_pydantic(name: str, schema_str: str) -> Type[BaseModel]:
+    """
+    Create Pydantic model directly from string syntax.
+
+    Args:
+        name: Name of the model class
+        schema_str: String schema definition (e.g., "name:string, email:email")
+
+    Returns:
+        Dynamically created Pydantic model class
+
+    Example:
+        UserModel = string_to_pydantic('User', "name:string, email:email, age:int?")
+        user = UserModel(name="John", email="john@example.com")
+    """
+    if not HAS_PYDANTIC:
+        raise ImportError("Pydantic is required for string_to_pydantic. Install with: pip install pydantic")
+
+    # Import here to avoid circular imports
+    from ..parsing.string_parser import parse_string_schema
+
+    # Convert string to JSON Schema, then to Pydantic
+    json_schema = parse_string_schema(schema_str)
+    return create_pydantic_from_json_schema(name, json_schema)
+
+
 def generate_pydantic_code(name: str, fields: Dict[str, SimpleField]) -> str:
     """
     Generate Pydantic model code as a string.

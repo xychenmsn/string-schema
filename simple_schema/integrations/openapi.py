@@ -92,6 +92,32 @@ def create_openapi_request_body(fields: Dict[str, Union[str, SimpleField]],
     }
 
 
+def string_to_openapi(schema_str: str, title: str = "Generated Schema",
+                     description: str = "", version: str = "1.0.0") -> Dict[str, Any]:
+    """
+    Create OpenAPI schema directly from string syntax.
+
+    Args:
+        schema_str: String schema definition (e.g., "name:string, email:email")
+        title: Schema title
+        description: Schema description
+        version: Schema version
+
+    Returns:
+        OpenAPI 3.0 compatible schema dictionary
+
+    Example:
+        openapi_schema = string_to_openapi("name:string, email:email", title="User Schema")
+    """
+    # Import here to avoid circular imports
+    from ..parsing.string_parser import parse_string_schema
+    from .json_schema import convert_to_openapi_schema
+
+    # Convert string to JSON Schema, then to OpenAPI
+    json_schema = parse_string_schema(schema_str)
+    return convert_to_openapi_schema(json_schema)
+
+
 def create_openapi_response(fields: Dict[str, Union[str, SimpleField]],
                           description: str = "Successful response",
                           status_code: str = "200",
