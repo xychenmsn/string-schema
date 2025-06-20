@@ -264,6 +264,26 @@ def json_schema_to_openapi(json_schema: Dict[str, Any]) -> Dict[str, Any]:
     return convert_to_openapi_schema(json_schema)
 
 
+# Reverse conversion functions
+def json_schema_to_string(json_schema: Dict[str, Any]) -> str:
+    """
+    Convert JSON Schema to Simple Schema string syntax.
+
+    Args:
+        json_schema: JSON Schema dictionary
+
+    Returns:
+        String representation in Simple Schema syntax
+
+    Example:
+        json_schema = {"type": "object", "properties": {"name": {"type": "string"}}}
+        schema_str = json_schema_to_string(json_schema)
+        # Returns: "name:string"
+    """
+    from .reverse import json_schema_to_string as _json_schema_to_string
+    return _json_schema_to_string(json_schema)
+
+
 def convert_to_openapi_schema(json_schema: Dict[str, Any]) -> Dict[str, Any]:
     """
     Convert JSON Schema to OpenAPI 3.0 schema format.

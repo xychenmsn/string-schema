@@ -37,9 +37,10 @@ from .utilities import (
 
 # Integration functions (consistent naming)
 from .integrations.pydantic import (
-    string_to_model,
     string_to_model_code,
     json_schema_to_model,
+    model_to_string,
+    model_to_json_schema,
     # Legacy names for backward compatibility
     string_to_pydantic,
     string_to_pydantic_code,
@@ -48,11 +49,14 @@ from .integrations.pydantic import (
 )
 
 from .integrations.openapi import (
-    string_to_openapi
+    string_to_openapi,
+    openapi_to_string,
+    openapi_to_json_schema
 )
 
 from .integrations.json_schema import (
     json_schema_to_openapi,
+    json_schema_to_string,
     # Legacy names for backward compatibility
     convert_to_openapi_schema
 )
@@ -64,12 +68,21 @@ __version__ = "1.0.0"
 __author__ = "Simple Schema Team"
 
 __all__ = [
-    # 🎯 Main conversion functions (consistent naming)
+    # 🎯 Forward conversion functions (source → target)
     "string_to_json_schema",        # String → JSON Schema
     "string_to_model",              # String → Pydantic model (main utility)
     "string_to_model_code",         # String → Pydantic code
     "string_to_openapi",            # String → OpenAPI schema
+    "json_schema_to_model",         # JSON Schema → Pydantic model
+    "json_schema_to_openapi",       # JSON Schema → OpenAPI schema
     "validate_string_syntax",       # Validate string syntax
+
+    # 🔄 Reverse conversion functions (target → source)
+    "model_to_string",              # Pydantic model → String
+    "model_to_json_schema",         # Pydantic model → JSON Schema
+    "json_schema_to_string",        # JSON Schema → String
+    "openapi_to_string",            # OpenAPI schema → String
+    "openapi_to_json_schema",       # OpenAPI schema → JSON Schema
 
     # 🔍 Data validation functions
     "validate_to_dict",             # Validate data → dict
@@ -82,10 +95,6 @@ __all__ = [
     # 🔧 Utility functions
     "get_model_info",               # Model introspection utility
     "validate_schema_compatibility", # Schema compatibility checker
-
-    # 🔄 Intermediate conversion functions
-    "json_schema_to_model",         # JSON Schema → Pydantic model
-    "json_schema_to_openapi",       # JSON Schema → OpenAPI schema
 
     # 🔙 Legacy names (for backward compatibility)
     "create_model",                 # Use string_to_model instead

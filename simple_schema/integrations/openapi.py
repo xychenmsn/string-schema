@@ -118,6 +118,44 @@ def string_to_openapi(schema_str: str, title: str = "Generated Schema",
     return convert_to_openapi_schema(json_schema)
 
 
+# Reverse conversion functions
+def openapi_to_string(openapi_schema: Dict[str, Any]) -> str:
+    """
+    Convert OpenAPI schema to Simple Schema string syntax.
+
+    Args:
+        openapi_schema: OpenAPI schema dictionary
+
+    Returns:
+        String representation in Simple Schema syntax
+
+    Example:
+        openapi_schema = {"type": "object", "properties": {"name": {"type": "string"}}}
+        schema_str = openapi_to_string(openapi_schema)
+        # Returns: "name:string"
+    """
+    from .reverse import openapi_to_string as _openapi_to_string
+    return _openapi_to_string(openapi_schema)
+
+
+def openapi_to_json_schema(openapi_schema: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Convert OpenAPI schema to JSON Schema.
+
+    Args:
+        openapi_schema: OpenAPI schema dictionary
+
+    Returns:
+        JSON Schema dictionary
+
+    Example:
+        openapi_schema = {"type": "string", "format": "email"}
+        json_schema = openapi_to_json_schema(openapi_schema)
+    """
+    from .reverse import openapi_to_json_schema as _openapi_to_json_schema
+    return _openapi_to_json_schema(openapi_schema)
+
+
 def create_openapi_response(fields: Dict[str, Union[str, SimpleField]],
                           description: str = "Successful response",
                           status_code: str = "200",

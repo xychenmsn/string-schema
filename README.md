@@ -11,7 +11,9 @@ Simple Schema takes human-readable text descriptions and converts them into stru
 
 ## 🚀 Core Functions & Use Cases
 
-### 📝 Schema Conversion Functions
+### 📝 Schema Conversion Matrix
+
+**Forward Conversions (Source → Target):**
 
 | Function                   | Input            | Output               | Use Case                                    |
 | -------------------------- | ---------------- | -------------------- | ------------------------------------------- |
@@ -21,6 +23,16 @@ Simple Schema takes human-readable text descriptions and converts them into stru
 | `string_to_openapi()`      | String syntax    | OpenAPI schema dict  | **Direct path** - string to OpenAPI         |
 | `json_schema_to_model()`   | JSON Schema dict | Pydantic model class | When you already have JSON Schema           |
 | `json_schema_to_openapi()` | JSON Schema dict | OpenAPI schema dict  | When you already have JSON Schema           |
+
+**Reverse Conversions (Target → Source):**
+
+| Function                   | Input            | Output           | Use Case                                   |
+| -------------------------- | ---------------- | ---------------- | ------------------------------------------ |
+| `model_to_string()`        | Pydantic model   | String syntax    | **Schema introspection** - model to string |
+| `model_to_json_schema()`   | Pydantic model   | JSON Schema dict | **Export** - model to JSON Schema          |
+| `json_schema_to_string()`  | JSON Schema dict | String syntax    | **Migration** - JSON Schema to string      |
+| `openapi_to_string()`      | OpenAPI schema   | String syntax    | **Import** - OpenAPI to string             |
+| `openapi_to_json_schema()` | OpenAPI schema   | JSON Schema dict | **Conversion** - OpenAPI to JSON Schema    |
 
 ### 🔍 Data Validation Functions
 
@@ -275,6 +287,55 @@ from simple_schema import string_to_json_schema, json_schema_to_openapi
 
 json_schema = string_to_json_schema("name:string, email:email")
 openapi_schema = json_schema_to_openapi(json_schema)
+```
+
+## 🔄 Reverse Conversions (Universal Schema Converter)
+
+Simple Schema now provides complete bidirectional conversion between all schema formats!
+
+### 🔍 Schema Introspection
+
+```python
+from simple_schema import model_to_string, model_to_json_schema
+
+# Reverse engineer existing Pydantic models
+existing_model = SomeExistingPydanticModel
+schema_string = model_to_string(existing_model)
+print(f"Model schema: {schema_string}")
+# Output: "name:string(min=1,max=100), email:email, age:int?"
+
+# Export to JSON Schema
+json_schema = model_to_json_schema(existing_model)
+```
+
+### 📦 Migration & Import
+
+```python
+from simple_schema import json_schema_to_string, openapi_to_string
+
+# Migrate from JSON Schema to Simple Schema syntax
+legacy_json_schema = load_from_file("legacy_api.json")
+simple_syntax = json_schema_to_string(legacy_json_schema)
+print(f"Migrated schema: {simple_syntax}")
+
+# Import from OpenAPI specifications
+openapi_spec = load_openapi_spec("api.yaml")
+for endpoint, schema in openapi_spec["components"]["schemas"].items():
+    simple_syntax = openapi_to_string(schema)
+    print(f"{endpoint}: {simple_syntax}")
+```
+
+### 🔧 Schema Comparison & Analysis
+
+```python
+# Compare different versions of models
+model_v1_str = model_to_string(UserModelV1)
+model_v2_str = model_to_string(UserModelV2)
+
+print("Schema changes:")
+print(f"V1: {model_v1_str}")
+print(f"V2: {model_v2_str}")
+# Easy to see what changed between versions
 ```
 
 ## 🎨 String Syntax Reference
