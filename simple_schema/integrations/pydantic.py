@@ -148,13 +148,13 @@ def create_pydantic_from_json_schema(name: str, json_schema: Dict[str, Any]) -> 
     pydantic_fields = {}
     
     for field_name, field_schema in properties.items():
-        python_type, field_info = _json_schema_to_pydantic_field(field_schema, field_name in required_fields)
+        python_type, field_info = _json_schema_to_pydantic_field(field_schema, field_name in required_fields, f"{name}{field_name.title()}")
         pydantic_fields[field_name] = (python_type, field_info)
     
     return create_model(name, **pydantic_fields)
 
 
-def _json_schema_to_pydantic_field(field_schema: Dict[str, Any], required: bool = True) -> tuple:
+def _json_schema_to_pydantic_field(field_schema: Dict[str, Any], required: bool = True, parent_name: str = "Nested") -> tuple:
     """Convert JSON Schema field to Pydantic field specification"""
     # Type mapping
     type_mapping = {
@@ -163,7 +163,7 @@ def _json_schema_to_pydantic_field(field_schema: Dict[str, Any], required: bool 
         'number': float,
         'boolean': bool
     }
-    
+
     # Handle union types
     if 'anyOf' in field_schema:
         from typing import Union as TypingUnion
@@ -172,42 +172,118 @@ def _json_schema_to_pydantic_field(field_schema: Dict[str, Any], required: bool 
             option_type = type_mapping.get(union_option.get('type', 'string'), str)
             union_types.append(option_type)
         python_type = TypingUnion[tuple(union_types)]
+    elif field_schema.get('type') == 'object':
+        # Handle nested objects by creating a nested Pydantic model
+        nested_model = create_pydantic_from_json_schema(f"{parent_name}Nested", field_schema)
+        python_type = nested_model
+    elif field_schema.get('type') == 'array':
+        # Handle arrays
+        items_schema = field_schema.get('items', {})
+        if items_schema.get('type') == 'object':
+            # Array of objects
+            from typing import List
+            item_model = create_pydantic_from_json_schema(f"{parent_name}Item", items_schema)
+            python_type = List[item_model]
+        else:
+            # Array of primitives
+            from typing import List
+            item_type = type_mapping.get(items_schema.get('type', 'string'), str)
+            python_type = List[item_type]
     else:
         field_type = field_schema.get('type', 'string')
         python_type = type_mapping.get(field_type, str)
-    
+
     # Handle optional fields
     if not required:
         python_type = Optional[python_type]
-    
+
     # Build Field arguments
     field_kwargs = {}
-    
+
     if 'description' in field_schema:
         field_kwargs['description'] = field_schema['description']
-    
+
     if 'default' in field_schema:
         field_kwargs['default'] = field_schema['default']
     elif not required:
         field_kwargs['default'] = None
-    
+
     # Numeric constraints
     if 'minimum' in field_schema:
         field_kwargs['ge'] = field_schema['minimum']
     if 'maximum' in field_schema:
         field_kwargs['le'] = field_schema['maximum']
-    
+
     # String constraints
     if 'minLength' in field_schema:
         field_kwargs['min_length'] = field_schema['minLength']
     if 'maxLength' in field_schema:
         field_kwargs['max_length'] = field_schema['maxLength']
-    
+
+    # Format constraints (email, url, etc.)
+    if 'format' in field_schema:
+        format_type = field_schema['format']
+        if format_type == 'email':
+            # Use EmailStr for email validation
+            try:
+                from pydantic import EmailStr
+                python_type = EmailStr
+                if not required:
+                    python_type = Optional[EmailStr]
+            except ImportError:
+                # Fallback to string with pattern validation
+                field_kwargs['pattern'] = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        elif format_type in ['uri', 'url']:
+            # Use HttpUrl for URL validation
+            try:
+                from pydantic import HttpUrl
+                python_type = HttpUrl
+                if not required:
+                    python_type = Optional[HttpUrl]
+            except ImportError:
+                # Fallback to string
+                pass
+        elif format_type == 'uuid':
+            # Use UUID type for UUID validation
+            try:
+                from uuid import UUID
+                python_type = UUID
+                if not required:
+                    python_type = Optional[UUID]
+            except ImportError:
+                # Fallback to string
+                pass
+        elif format_type == 'date-time':
+            # Use datetime for datetime validation
+            try:
+                from datetime import datetime
+                python_type = datetime
+                if not required:
+                    python_type = Optional[datetime]
+            except ImportError:
+                # Fallback to string
+                pass
+
+    # Array constraints
+    if 'minItems' in field_schema:
+        field_kwargs['min_length'] = field_schema['minItems']
+    if 'maxItems' in field_schema:
+        field_kwargs['max_length'] = field_schema['maxItems']
+
     # Enum constraints
     if 'enum' in field_schema:
-        # Pydantic handles enums automatically when values are provided
-        pass
-    
+        # Create a Literal type for enum validation
+        from typing import Literal
+        enum_values = field_schema['enum']
+        if len(enum_values) == 1:
+            python_type = Literal[enum_values[0]]
+        else:
+            python_type = Literal[tuple(enum_values)]
+
+        # Handle optional enum fields
+        if not required:
+            python_type = Optional[python_type]
+
     return python_type, Field(**field_kwargs) if field_kwargs else Field()
 
 

@@ -22,6 +22,17 @@ from .parsing.string_parser import (
     validate_string_schema
 )
 
+# 🎯 Core Pydantic Utility Functions (Phase 1 & 2)
+from .utilities import (
+    create_model,           # String → Pydantic model (main utility)
+    validate_to_dict,       # Validate data → dict
+    validate_to_model,      # Validate data → Pydantic model
+    returns_dict,           # Decorator for dict validation
+    returns_model,          # Decorator for model validation
+    get_model_info,         # Model introspection utility
+    validate_schema_compatibility  # Schema compatibility checker
+)
+
 # Integration functions (clear names)
 from .integrations.pydantic import (
     string_to_pydantic,
@@ -48,6 +59,15 @@ __version__ = "1.0.0"
 __author__ = "Simple Schema Team"
 
 __all__ = [
+    # 🎯 Core Pydantic Utility Functions (NEW - Phase 1 & 2)
+    "create_model",                 # String → Pydantic model (main utility)
+    "validate_to_dict",             # Validate data → dict
+    "validate_to_model",            # Validate data → Pydantic model
+    "returns_dict",                 # Decorator for dict validation
+    "returns_model",                # Decorator for model validation
+    "get_model_info",               # Model introspection utility
+    "validate_schema_compatibility", # Schema compatibility checker
+
     # 🎯 Main conversion functions (recommended)
     "string_to_json_schema",        # String → JSON Schema
     "string_to_pydantic",           # String → Pydantic model

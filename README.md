@@ -67,6 +67,38 @@ user = UserModel(name="Alice", email="alice@example.com")
 print(user.model_dump_json())  # {"name": "Alice", "email": "alice@example.com"}
 ```
 
+## 🚀 NEW: Pydantic Utility Functions
+
+**Transform string schemas into powerful Pydantic utilities with 90% less code!**
+
+```python
+from simple_schema import create_model, validate_to_dict, returns_dict
+
+# 🎯 Create Pydantic models instantly
+UserModel = create_model("name:string(min=1,max=100), email:email, age:int(0,120)?")
+user = UserModel(name="John", email="john@example.com", age=30)
+
+# 🔍 Validate data to clean dictionaries
+user_dict = validate_to_dict(raw_data, "name:string, email:email, age:int?")
+
+# 🎨 Auto-validate function returns
+@returns_dict("id:uuid, name:string, status:enum(created,updated)")
+def create_user(user_data):
+    return {"id": generate_uuid(), "name": user_data["name"], "status": "created"}
+
+# 🌐 Perfect for FastAPI
+@app.post("/users")
+@returns_dict("id:uuid, name:string, created:datetime")
+def create_user_endpoint(user: create_model("name:string, email:email")):
+    return process_user_creation(user)
+```
+
+**Perfect for**: FastAPI development, LLM data extraction, rapid prototyping, data pipelines.
+
+**Features**: Arrays `[{name:string}]`, nested objects `{profile:{bio:text?}}`, enums, constraints, decorators.
+
+[📖 **Full Pydantic Utilities Documentation**](docs/pydantic-utilities.md)
+
 ## �📦 Installation
 
 ```bash
