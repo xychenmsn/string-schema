@@ -5,10 +5,10 @@ Transform your Simple Schema implementation into a comprehensive **Pydantic util
 ## 🚀 Quick Start
 
 ```python
-from simple_schema import create_model, validate_to_dict, returns_dict
+from simple_schema import string_to_model, validate_to_dict, returns_dict
 
 # Create Pydantic models from string schemas
-UserModel = create_model("name:string(min=1,max=100), email:email, age:int(0,120)?")
+UserModel = string_to_model("name:string(min=1,max=100), email:email, age:int(0,120)?")
 user = UserModel(name="John", email="john@example.com", age=30)
 
 # Validate data to dictionaries
@@ -22,22 +22,23 @@ def create_user(user_data):
 
 ## 📦 Core Functions
 
-### 1. `create_model(schema_str, name=None)`
+### 1. `string_to_model(schema_str, name=None)`
 
 **The main utility function** - converts string schemas directly to Pydantic model classes.
 
 ```python
 # Basic usage
-UserModel = create_model("name:string, email:email, age:int?")
+UserModel = string_to_model("name:string, email:email, age:int?")
 
 # Array schemas
-ProductModel = create_model("[{name:string, price:number(min=0)}]")
+ProductModel = string_to_model("[{name:string, price:number(min=0)}]")
 
 # Complex nested schemas
-ProfileModel = create_model("name:string, profile:{bio:text?, avatar:url?, social:{twitter:string?, github:string?}?}?")
+ProfileModel = string_to_model("name:string, profile:{bio:text?, avatar:url?, social:{twitter:string?, github:string?}?}?")
 ```
 
 **Features:**
+
 - ✅ Basic types: `string`, `int`, `number`, `boolean`
 - ✅ Special types: `email`, `url`, `uuid`, `datetime`, `phone`
 - ✅ Arrays: `[string]`, `[{name:string, price:number}]`
@@ -137,13 +138,13 @@ print(f"Recommendations: {compatibility['recommendations']}")
 
 ```python
 from fastapi import FastAPI
-from simple_schema import create_model, returns_dict
+from simple_schema import string_to_model, returns_dict
 
 app = FastAPI()
 
 # Create models from string schemas
-CreateUserRequest = create_model("name:string(min=1), email:email, age:int?")
-UserResponse = create_model("id:uuid, name:string, email:email, created:datetime")
+CreateUserRequest = string_to_model("name:string(min=1), email:email, age:int?")
+UserResponse = string_to_model("id:uuid, name:string, email:email, created:datetime")
 
 @app.post("/users", response_model=UserResponse)
 def create_user(request: CreateUserRequest):
@@ -164,6 +165,7 @@ def get_user(user_id: str):
 ## 🎯 Key Use Cases
 
 ### 1. **Rapid API Development**
+
 ```python
 @app.post("/products")
 @returns_dict("id:uuid, name:string, status:enum(created,exists)")
@@ -172,6 +174,7 @@ def create_product(product: create_model("name:string, price:number(min=0)")):
 ```
 
 ### 2. **Dynamic Schema Generation**
+
 ```python
 def create_form_model(field_config: str):
     return create_model(field_config)
@@ -180,12 +183,14 @@ ContactForm = create_form_model("name:string(min=1), email:email, message:text(m
 ```
 
 ### 3. **LLM Data Extraction**
+
 ```python
 ExtractionModel = create_model("[{person:string, sentiment:enum(positive,negative,neutral)}]")
 result = llm_client.extract(text, response_model=ExtractionModel)
 ```
 
 ### 4. **Data Pipeline Validation**
+
 ```python
 @returns_dict("[{user_id:uuid, event:enum(login,logout,purchase), timestamp:datetime}]")
 def process_event_stream(raw_events):
@@ -195,6 +200,7 @@ def process_event_stream(raw_events):
 ## 💡 Value Proposition
 
 ### **Before (Traditional Pydantic)**
+
 ```python
 from pydantic import BaseModel, Field, EmailStr
 from typing import List, Optional
@@ -212,10 +218,11 @@ class User(BaseModel):
 ```
 
 ### **After (String Schema Utility)**
-```python
-from simple_schema import create_model
 
-User = create_model("name:string(min=1,max=100), email:email, age:int(0,120)?, status:enum(active,inactive)")
+```python
+from simple_schema import string_to_model
+
+User = string_to_model("name:string(min=1,max=100), email:email, age:int(0,120)?, status:enum(active,inactive)")
 ```
 
 **Result**: 90% less code, same functionality, better readability.
@@ -223,17 +230,19 @@ User = create_model("name:string(min=1,max=100), email:email, age:int(0,120)?, s
 ## 🔄 Migration Guide
 
 ### From Existing Simple Schema
+
 ```python
 # Old way
 from simple_schema import string_to_pydantic
 UserModel = string_to_pydantic('User', "name:string, email:email")
 
-# New way (shorter, cleaner)
-from simple_schema import create_model
-UserModel = create_model("name:string, email:email", name='User')
+# New way (consistent naming)
+from simple_schema import string_to_model
+UserModel = string_to_model("name:string, email:email", name='User')
 ```
 
 ### From Pure Pydantic
+
 ```python
 # Old way
 class User(BaseModel):
@@ -249,6 +258,7 @@ User = create_model("name:string, email:email, age:int?")
 ## 🚀 Advanced Features
 
 ### Array Handling
+
 ```python
 # Simple arrays
 TagModel = create_model("[string]")
@@ -260,6 +270,7 @@ products = ProductModel([{"name": "iPhone", "price": 999}])
 ```
 
 ### Nested Objects
+
 ```python
 ProfileModel = create_model("""
 user:{
@@ -277,11 +288,12 @@ user:{
 ```
 
 ### Constraints & Validation
+
 ```python
 # String constraints
 create_model("name:string(min=1,max=100)")
 
-# Numeric constraints  
+# Numeric constraints
 create_model("age:int(0,120), score:float(0,1)")
 
 # Array constraints

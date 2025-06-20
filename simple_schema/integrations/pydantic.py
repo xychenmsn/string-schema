@@ -110,8 +110,8 @@ def _simple_field_to_pydantic(field: SimpleField) -> tuple:
     return python_type, Field(**field_kwargs) if field_kwargs else Field()
 
 
-# Clear function name alias
-def json_schema_to_pydantic(name: str, json_schema: Dict[str, Any]) -> Type[BaseModel]:
+# New consistent naming
+def json_schema_to_model(name: str, json_schema: Dict[str, Any]) -> Type[BaseModel]:
     """
     Create Pydantic model from JSON Schema dictionary.
 
@@ -123,9 +123,19 @@ def json_schema_to_pydantic(name: str, json_schema: Dict[str, Any]) -> Type[Base
         Dynamically created Pydantic model class
 
     Example:
-        UserModel = json_schema_to_pydantic('User', json_schema)
+        UserModel = json_schema_to_model('User', json_schema)
     """
     return create_pydantic_from_json_schema(name, json_schema)
+
+
+# Legacy alias for backward compatibility
+def json_schema_to_pydantic(name: str, json_schema: Dict[str, Any]) -> Type[BaseModel]:
+    """
+    Create Pydantic model from JSON Schema dictionary.
+
+    DEPRECATED: Use json_schema_to_model() instead for consistent naming.
+    """
+    return json_schema_to_model(name, json_schema)
 
 
 def create_pydantic_from_json_schema(name: str, json_schema: Dict[str, Any]) -> Type[BaseModel]:
@@ -406,7 +416,7 @@ def validate_pydantic_compatibility(fields: Dict[str, SimpleField]) -> Dict[str,
     return result
 
 
-def string_to_pydantic(name: str, schema_str: str) -> Type[BaseModel]:
+def string_to_model(name: str, schema_str: str) -> Type[BaseModel]:
     """
     Create Pydantic model directly from string syntax.
 
@@ -418,11 +428,11 @@ def string_to_pydantic(name: str, schema_str: str) -> Type[BaseModel]:
         Dynamically created Pydantic model class
 
     Example:
-        UserModel = string_to_pydantic('User', "name:string, email:email, age:int?")
+        UserModel = string_to_model('User', "name:string, email:email, age:int?")
         user = UserModel(name="John", email="john@example.com")
     """
     if not HAS_PYDANTIC:
-        raise ImportError("Pydantic is required for string_to_pydantic. Install with: pip install pydantic")
+        raise ImportError("Pydantic is required for string_to_model. Install with: pip install pydantic")
 
     # Import here to avoid circular imports
     from ..parsing.string_parser import parse_string_schema
@@ -432,7 +442,17 @@ def string_to_pydantic(name: str, schema_str: str) -> Type[BaseModel]:
     return create_pydantic_from_json_schema(name, json_schema)
 
 
-def string_to_pydantic_code(name: str, schema_str: str) -> str:
+# Legacy alias for backward compatibility
+def string_to_pydantic(name: str, schema_str: str) -> Type[BaseModel]:
+    """
+    Create Pydantic model directly from string syntax.
+
+    DEPRECATED: Use string_to_model() instead for consistent naming.
+    """
+    return string_to_model(name, schema_str)
+
+
+def string_to_model_code(name: str, schema_str: str) -> str:
     """
     Generate Pydantic model code directly from string syntax.
 
@@ -444,7 +464,7 @@ def string_to_pydantic_code(name: str, schema_str: str) -> str:
         Python code string for the Pydantic model
 
     Example:
-        code = string_to_pydantic_code('User', "name:string, email:email, age:int?")
+        code = string_to_model_code('User', "name:string, email:email, age:int?")
         print(code)
         # Output:
         # from pydantic import BaseModel, Field
@@ -473,6 +493,16 @@ def string_to_pydantic_code(name: str, schema_str: str) -> str:
         fields[field_name] = simple_field
 
     return generate_pydantic_code(name, fields)
+
+
+# Legacy alias for backward compatibility
+def string_to_pydantic_code(name: str, schema_str: str) -> str:
+    """
+    Generate Pydantic model code directly from string syntax.
+
+    DEPRECATED: Use string_to_model_code() instead for consistent naming.
+    """
+    return string_to_model_code(name, schema_str)
 
 
 def _json_schema_to_simple_field(field_schema: Dict[str, Any], required: bool) -> SimpleField:

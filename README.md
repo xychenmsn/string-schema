@@ -11,17 +11,38 @@ Simple Schema takes human-readable text descriptions and converts them into stru
 
 ## 🚀 Core Functions & Use Cases
 
-### 📝 Core Functions (Clear & Descriptive Names)
+### 📝 Schema Conversion Functions
 
-| Function                    | Input            | Output               | Use Case                             |
-| --------------------------- | ---------------- | -------------------- | ------------------------------------ |
-| `string_to_json_schema()`   | String syntax    | JSON Schema dict     | Main conversion function             |
-| `string_to_pydantic()`      | String syntax    | Pydantic model class | **Direct path** - string to Pydantic |
-| `string_to_pydantic_code()` | String syntax    | Python code string   | **Code generation** - for templates  |
-| `string_to_openapi()`       | String syntax    | OpenAPI schema dict  | **Direct path** - string to OpenAPI  |
-| `validate_string_syntax()`  | String syntax    | Validation result    | Check syntax and get feedback        |
-| `json_schema_to_pydantic()` | JSON Schema dict | Pydantic model class | When you already have JSON Schema    |
-| `json_schema_to_openapi()`  | JSON Schema dict | OpenAPI schema dict  | When you already have JSON Schema    |
+| Function                   | Input            | Output               | Use Case                                    |
+| -------------------------- | ---------------- | -------------------- | ------------------------------------------- |
+| `string_to_json_schema()`  | String syntax    | JSON Schema dict     | **Main conversion** - string to JSON Schema |
+| `string_to_model()`        | String syntax    | Pydantic model class | **Direct path** - string to Pydantic model  |
+| `string_to_model_code()`   | String syntax    | Python code string   | **Code generation** - for templates         |
+| `string_to_openapi()`      | String syntax    | OpenAPI schema dict  | **Direct path** - string to OpenAPI         |
+| `json_schema_to_model()`   | JSON Schema dict | Pydantic model class | When you already have JSON Schema           |
+| `json_schema_to_openapi()` | JSON Schema dict | OpenAPI schema dict  | When you already have JSON Schema           |
+
+### 🔍 Data Validation Functions
+
+| Function                   | Input         | Output            | Use Case                          |
+| -------------------------- | ------------- | ----------------- | --------------------------------- |
+| `validate_to_dict()`       | Data + schema | Validated dict    | **API responses** - clean dicts   |
+| `validate_to_model()`      | Data + schema | Pydantic model    | **Business logic** - typed models |
+| `validate_string_syntax()` | String syntax | Validation result | Check syntax and get feedback     |
+
+### 🎨 Function Decorators
+
+| Decorator          | Purpose                | Returns        | Use Case           |
+| ------------------ | ---------------------- | -------------- | ------------------ |
+| `@returns_dict()`  | Auto-validate to dict  | Validated dict | **API endpoints**  |
+| `@returns_model()` | Auto-validate to model | Pydantic model | **Business logic** |
+
+### 🔧 Utility Functions
+
+| Function                          | Purpose             | Returns            | Use Case                 |
+| --------------------------------- | ------------------- | ------------------ | ------------------------ |
+| `get_model_info()`                | Model introspection | Model details dict | **Debugging & analysis** |
+| `validate_schema_compatibility()` | Schema validation   | Compatibility info | **Schema validation**    |
 
 ### 🎯 Key Scenarios
 
@@ -54,50 +75,65 @@ print(schema)
 # }
 ```
 
-### 🎯 Direct to Pydantic
+### 🎯 Create Pydantic Models
 
 ```python
-from simple_schema import string_to_pydantic
+from simple_schema import string_to_model
 
-# One line: string syntax → Pydantic model
-UserModel = string_to_pydantic('User', "name:string, email:email, age:int?")
+# Create Pydantic model from string syntax
+UserModel = string_to_model("name:string, email:email, age:int?")
 
 # Use immediately
 user = UserModel(name="Alice", email="alice@example.com")
 print(user.model_dump_json())  # {"name": "Alice", "email": "alice@example.com"}
 ```
 
-## 🚀 NEW: Pydantic Utility Functions
-
-**Transform string schemas into powerful Pydantic utilities with 90% less code!**
+### � Validate Data
 
 ```python
-from simple_schema import create_model, validate_to_dict, returns_dict
+from simple_schema import validate_to_dict, validate_to_model
 
-# 🎯 Create Pydantic models instantly
-UserModel = create_model("name:string(min=1,max=100), email:email, age:int(0,120)?")
-user = UserModel(name="John", email="john@example.com", age=30)
-
-# 🔍 Validate data to clean dictionaries
+# Validate to clean dictionaries (perfect for API responses)
 user_dict = validate_to_dict(raw_data, "name:string, email:email, age:int?")
 
-# 🎨 Auto-validate function returns
+# Validate to typed models (perfect for business logic)
+user_model = validate_to_model(raw_data, "name:string, email:email, age:int?")
+print(user_model.name)  # Full type safety
+```
+
+### 🎨 Function Decorators
+
+```python
+from simple_schema import returns_dict, returns_model
+
+# Auto-validate function returns to dicts
 @returns_dict("id:uuid, name:string, status:enum(created,updated)")
 def create_user(user_data):
     return {"id": generate_uuid(), "name": user_data["name"], "status": "created"}
 
-# 🌐 Perfect for FastAPI
+# Auto-validate function returns to models
+@returns_model("name:string, email:email, profile:{bio:text?}?")
+def enrich_user_data(basic_data):
+    return enhanced_user_data  # Returns validated Pydantic model
+```
+
+### 🌐 FastAPI Integration
+
+```python
+from simple_schema import string_to_model, returns_dict
+
+# Create models for FastAPI
+CreateUserRequest = string_to_model("name:string(min=1), email:email, age:int?")
+
 @app.post("/users")
 @returns_dict("id:uuid, name:string, created:datetime")
-def create_user_endpoint(user: create_model("name:string, email:email")):
+def create_user_endpoint(user: CreateUserRequest):
     return process_user_creation(user)
 ```
 
-**Perfect for**: FastAPI development, LLM data extraction, rapid prototyping, data pipelines.
-
 **Features**: Arrays `[{name:string}]`, nested objects `{profile:{bio:text?}}`, enums, constraints, decorators.
 
-[📖 **Full Pydantic Utilities Documentation**](docs/pydantic-utilities.md)
+[📖 **Complete Documentation**](docs/pydantic-utilities.md)
 
 ## �📦 Installation
 
@@ -193,10 +229,10 @@ schema = string_to_json_schema("name:string, email:email")
 ### 🐍 Pydantic Models (Python Classes)
 
 ```python
-from simple_schema import string_to_pydantic
+from simple_schema import string_to_model
 
 # Direct conversion: String syntax → Pydantic model
-UserModel = string_to_pydantic('User', "name:string(min=1, max=100), email:email, age:int?")
+UserModel = string_to_model("name:string(min=1, max=100), email:email, age:int?")
 
 # Use the model for validation
 user = UserModel(name="John Doe", email="john@example.com")
@@ -206,10 +242,10 @@ print(user.model_dump_json())  # {"name": "John Doe", "email": "john@example.com
 ### 🔧 Code Generation (For Templates & Tools)
 
 ```python
-from simple_schema import string_to_pydantic_code
+from simple_schema import string_to_model_code
 
 # Generate Pydantic model code as a string
-code = string_to_pydantic_code('User', "name:string(min=1, max=100), email:email, age:int?")
+code = string_to_model_code("User", "name:string(min=1, max=100), email:email, age:int?")
 print(code)
 
 # Output:
@@ -229,14 +265,13 @@ with open('models.py', 'w') as f:
 ### 🌐 OpenAPI Schemas (API Documentation)
 
 ```python
-from simple_schema.integrations.openapi import string_to_openapi
+from simple_schema import string_to_openapi
 
 # Direct conversion: String syntax → OpenAPI schema
-openapi_schema = string_to_openapi("name:string, email:email", title="User Schema")
+openapi_schema = string_to_openapi("name:string, email:email")
 
 # Alternative: Two-step process if you need the JSON Schema too
-from simple_schema import string_to_json_schema
-from simple_schema.integrations.json_schema import json_schema_to_openapi
+from simple_schema import string_to_json_schema, json_schema_to_openapi
 
 json_schema = string_to_json_schema("name:string, email:email")
 openapi_schema = json_schema_to_openapi(json_schema)
@@ -305,10 +340,10 @@ schema = string_to_json_schema("""
 ### 🔧 FastAPI Development
 
 ```python
-from simple_schema import string_to_pydantic
+from simple_schema import string_to_model
 
 # Direct conversion: String → Pydantic model
-UserModel = string_to_pydantic('User', "name:string, email:email, age:int?")
+UserModel = string_to_model("name:string, email:email, age:int?")
 
 # Use in FastAPI endpoints
 @app.post("/users/")
@@ -319,7 +354,7 @@ async def create_user(user: UserModel):
 ### 🏗️ Code Generation & Templates
 
 ```python
-from simple_schema import string_to_pydantic_code
+from simple_schema import string_to_model_code
 
 # Generate multiple model files
 schemas = {
@@ -329,7 +364,7 @@ schemas = {
 }
 
 for model_name, schema_str in schemas.items():
-    code = string_to_pydantic_code(model_name, schema_str)
+    code = string_to_model_code(model_name, schema_str)
     with open(f'models/{model_name.lower()}.py', 'w') as f:
         f.write(code)
     print(f"Generated {model_name} model")

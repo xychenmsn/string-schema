@@ -13,7 +13,7 @@ Features demonstrated:
 """
 
 from simple_schema import (
-    create_model,
+    string_to_model,
     validate_to_dict,
     validate_to_model,
     returns_dict,
@@ -26,24 +26,24 @@ from datetime import datetime
 from typing import Dict, Any, List
 
 
-def demo_create_model():
-    """Demonstrate create_model() function - the main utility"""
-    print("🎯 Demo: create_model() - String Schema → Pydantic Model")
+def demo_string_to_model():
+    """Demonstrate string_to_model() function - the main utility"""
+    print("🎯 Demo: string_to_model() - String Schema → Pydantic Model")
     print("=" * 60)
-    
+
     # Example 1: Basic user model
     print("\n1. Basic User Model:")
-    UserModel = create_model("name:string(min=1,max=100), email:email, age:int(0,120)?")
-    
+    UserModel = string_to_model("name:string(min=1,max=100), email:email, age:int(0,120)?")
+
     user = UserModel(name="John Doe", email="john@example.com", age=30)
     print(f"   Created user: {user}")
     print(f"   User name: {user.name}")
     print(f"   User email: {user.email}")
     print(f"   User age: {user.age}")
-    
+
     # Example 2: Product array model
     print("\n2. Product Array Model:")
-    ProductModel = create_model("[{name:string, price:number(min=0), category:enum(electronics,clothing,books)}]")
+    ProductModel = string_to_model("[{name:string, price:number(min=0), category:enum(electronics,clothing,books)}]")
     
     products_data = [
         {"name": "iPhone", "price": 999, "category": "electronics"},
@@ -54,7 +54,7 @@ def demo_create_model():
     
     # Example 3: Complex nested model
     print("\n3. Complex Nested Model:")
-    ProfileModel = create_model("name:string, email:email, profile:{bio:text?, avatar:url?, social:{twitter:string?, github:string?}?}?")
+    ProfileModel = string_to_model("name:string, email:email, profile:{bio:text?, avatar:url?, social:{twitter:string?, github:string?}?}?")
     
     profile_data = {
         "name": "Jane Smith",
@@ -177,7 +177,7 @@ def demo_utility_functions():
     print("=" * 60)
     
     # Create a model for inspection
-    UserModel = create_model("name:string(min=1,max=100), email:email, age:int(0,120)?, status:enum(active,inactive)")
+    UserModel = string_to_model("name:string(min=1,max=100), email:email, age:int(0,120)?, status:enum(active,inactive)")
     
     # Example 1: Model introspection
     print("\n1. get_model_info() - Model Introspection:")
@@ -232,7 +232,7 @@ if __name__ == "__main__":
     print("Transform string schemas into powerful Pydantic utilities!")
     
     try:
-        demo_create_model()
+        demo_string_to_model()
         demo_validation_functions()
         demo_decorators()
         demo_utility_functions()

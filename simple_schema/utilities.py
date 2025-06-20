@@ -30,7 +30,7 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
-def create_model(schema_str: str, name: Optional[str] = None) -> Type[BaseModel]:
+def string_to_model(schema_str: str, name: Optional[str] = None) -> Type[BaseModel]:
     """
     Create Pydantic model from string schema.
 
@@ -46,18 +46,18 @@ def create_model(schema_str: str, name: Optional[str] = None) -> Type[BaseModel]
 
     Examples:
         # Basic usage
-        UserModel = create_model("name:string(min=1,max=100), email:email, age:int(0,120)?")
+        UserModel = string_to_model("name:string(min=1,max=100), email:email, age:int(0,120)?")
         user = UserModel(name="John", email="john@example.com", age=30)
 
         # Array schemas
-        ProductModel = create_model("[{name:string, price:number(min=0), category:enum(electronics,clothing,books)}]")
+        ProductModel = string_to_model("[{name:string, price:number(min=0), category:enum(electronics,clothing,books)}]")
         products = ProductModel([{"name": "iPhone", "price": 999, "category": "electronics"}])
 
         # Complex nested schemas
-        ProfileModel = create_model("name:string, email:email, profile:{bio:text?, avatar:url?}?")
+        ProfileModel = string_to_model("name:string, email:email, profile:{bio:text?, avatar:url?}?")
     """
     if not HAS_PYDANTIC:
-        raise ImportError("Pydantic is required for create_model. Install with: pip install pydantic")
+        raise ImportError("Pydantic is required for string_to_model. Install with: pip install pydantic")
 
     # Import here to avoid circular imports
     from .parsing.string_parser import parse_string_schema
@@ -165,6 +165,16 @@ def create_model(schema_str: str, name: Optional[str] = None) -> Type[BaseModel]
         raise ValueError(f"Failed to create model from schema '{schema_str}': {str(e)}") from e
 
 
+# Legacy alias for backward compatibility
+def create_model(schema_str: str, name: Optional[str] = None) -> Type[BaseModel]:
+    """
+    Create Pydantic model from string schema.
+
+    DEPRECATED: Use string_to_model() instead for consistent naming.
+    """
+    return string_to_model(schema_str, name)
+
+
 def validate_to_dict(data: Union[Dict[str, Any], Any], schema_str: str) -> Union[Dict[str, Any], List[Any]]:
     """
     Validate data against string schema and return validated dict or list.
@@ -196,7 +206,7 @@ def validate_to_dict(data: Union[Dict[str, Any], Any], schema_str: str) -> Union
 
     try:
         # Create temporary model for validation
-        TempModel = create_model(schema_str, "TempValidationModel")
+        TempModel = string_to_model(schema_str, "TempValidationModel")
 
         # Check if this is an array schema
         from .parsing.string_parser import parse_string_schema
@@ -272,7 +282,7 @@ def validate_to_model(data: Union[Dict[str, Any], Any], schema_str: str):
 
     try:
         # Create temporary model for validation
-        TempModel = create_model(schema_str, "TempValidationModel")
+        TempModel = string_to_model(schema_str, "TempValidationModel")
 
         # Check if this is an array schema
         from .parsing.string_parser import parse_string_schema

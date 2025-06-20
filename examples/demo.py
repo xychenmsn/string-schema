@@ -16,8 +16,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # Import the organized Simple Schema modules
 from simple_schema import (
     string_to_json_schema,
-    string_to_pydantic,
-    string_to_pydantic_code,
+    string_to_model,
+    string_to_model_code,
     validate_string_syntax,
     # Legacy imports for demo compatibility
     parse_string_schema
