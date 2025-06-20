@@ -17,7 +17,7 @@ except ImportError:
     HAS_PYDANTIC = False
 
 from simple_schema.utilities import (
-    create_model,
+    string_to_model,
     validate_to_dict,
     validate_to_model,
     returns_dict,
@@ -28,27 +28,27 @@ from simple_schema.utilities import (
 
 
 @pytest.mark.skipif(not HAS_PYDANTIC, reason="Pydantic not available")
-class TestCreateModel:
-    """Test the create_model() function"""
-    
+class TestStringToModel:
+    """Test the string_to_model() function"""
+
     def test_basic_model_creation(self):
         """Test basic model creation from string schema"""
-        UserModel = create_model("name:string, email:email, age:int?")
-        
+        UserModel = string_to_model("name:string, email:email, age:int?")
+
         # Test model creation
         user = UserModel(name="John", email="john@example.com", age=30)
         assert user.name == "John"
         assert user.email == "john@example.com"
         assert user.age == 30
-        
+
         # Test optional field
         user_no_age = UserModel(name="Jane", email="jane@example.com")
         assert user_no_age.name == "Jane"
         assert user_no_age.age is None
-    
+
     def test_array_model_creation(self):
         """Test array model creation"""
-        ProductModel = create_model("[{name:string, price:number(min=0)}]")
+        ProductModel = string_to_model("[{name:string, price:number(min=0)}]")
 
         products_data = [
             {"name": "iPhone", "price": 999},
@@ -65,11 +65,11 @@ class TestCreateModel:
             # Pydantic v1
             assert len(products.__root__) == 2
             assert products.__root__[0]["name"] == "iPhone"
-    
+
     def test_nested_model_creation(self):
         """Test nested object model creation"""
-        ProfileModel = create_model("name:string, profile:{bio:text?, avatar:url?}?")
-        
+        ProfileModel = string_to_model("name:string, profile:{bio:text?, avatar:url?}?")
+
         profile_data = {
             "name": "Alice",
             "profile": {
@@ -80,56 +80,56 @@ class TestCreateModel:
         profile = ProfileModel(**profile_data)
         assert profile.name == "Alice"
         assert profile.profile.bio == "Software developer"
-    
+
     def test_enum_model_creation(self):
         """Test enum field model creation"""
-        StatusModel = create_model("status:enum(active,inactive,pending)")
-        
+        StatusModel = string_to_model("status:enum(active,inactive,pending)")
+
         status = StatusModel(status="active")
         assert status.status == "active"
-        
+
         # Test invalid enum value
         with pytest.raises(ValidationError):
             StatusModel(status="invalid")
-    
+
     def test_constraints_model_creation(self):
         """Test model creation with constraints"""
-        ConstrainedModel = create_model("name:string(min=1,max=100), age:int(0,120)")
-        
+        ConstrainedModel = string_to_model("name:string(min=1,max=100), age:int(0,120)")
+
         # Valid data
         valid = ConstrainedModel(name="John", age=30)
         assert valid.name == "John"
         assert valid.age == 30
-        
+
         # Test string length constraint
         with pytest.raises(ValidationError):
             ConstrainedModel(name="", age=30)  # Empty string
-        
+
         # Test numeric constraint
         with pytest.raises(ValidationError):
             ConstrainedModel(name="John", age=150)  # Age too high
-    
+
     def test_model_name_generation(self):
         """Test automatic model name generation"""
-        Model1 = create_model("name:string")
-        Model2 = create_model("name:string")
-        
+        Model1 = string_to_model("name:string")
+        Model2 = string_to_model("name:string")
+
         # Should have different names
         assert Model1.__name__ != Model2.__name__
         assert "GeneratedModel_" in Model1.__name__
-    
+
     def test_custom_model_name(self):
         """Test custom model name"""
-        CustomModel = create_model("name:string", name="CustomUser")
+        CustomModel = string_to_model("name:string", name="CustomUser")
         assert CustomModel.__name__ == "CustomUser"
-    
+
     def test_invalid_schema(self):
         """Test error handling for invalid schemas"""
         # Since the parser is very robust, let's test with a schema that would cause
         # issues during model creation - like an empty schema string that results in no fields
         try:
             # Test with completely empty schema
-            result = create_model("")
+            result = string_to_model("")
             # If it succeeds, check that it at least creates a valid model
             assert hasattr(result, '__name__')
             print(f"Empty schema created model: {result.__name__}")
@@ -300,7 +300,7 @@ class TestUtilityFunctions:
     
     def test_get_model_info(self):
         """Test get_model_info() function"""
-        UserModel = create_model("name:string, email:email, age:int?")
+        UserModel = string_to_model("name:string, email:email, age:int?")
         info = get_model_info(UserModel)
         
         assert info["model_name"] == UserModel.__name__
@@ -343,8 +343,8 @@ class TestIntegrationScenarios:
     def test_api_endpoint_simulation(self):
         """Test simulated API endpoint workflow"""
         # Create request/response models
-        CreateUserRequest = create_model("name:string(min=1), email:email, age:int?")
-        UserResponse = create_model("id:uuid, name:string, email:email, created:datetime")
+        CreateUserRequest = string_to_model("name:string(min=1), email:email, age:int?")
+        UserResponse = string_to_model("id:uuid, name:string, email:email, created:datetime")
         
         # Simulate API endpoint
         @returns_dict("id:uuid, name:string, email:email, created:datetime")

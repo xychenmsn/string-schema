@@ -44,8 +44,16 @@ class TestPydanticIntegration:
         Model = create_pydantic_model('TestModel', fields)
 
         assert issubclass(Model, BaseModel)
-        assert hasattr(Model, 'name')
-        assert hasattr(Model, 'age')
+
+        # Check that model has the expected fields
+        if hasattr(Model, 'model_fields'):
+            # Pydantic v2
+            assert 'name' in Model.model_fields
+            assert 'age' in Model.model_fields
+        elif hasattr(Model, '__fields__'):
+            # Pydantic v1
+            assert 'name' in Model.__fields__
+            assert 'age' in Model.__fields__
 
         # Test model instantiation
         instance = Model(name="John", age=30)
