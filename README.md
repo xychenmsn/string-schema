@@ -17,7 +17,9 @@ Simple Schema takes human-readable text descriptions and converts them into stru
 | --------------------------- | ---------------- | -------------------- | ------------------------------------ |
 | `string_to_json_schema()`   | String syntax    | JSON Schema dict     | Main conversion function             |
 | `string_to_pydantic()`      | String syntax    | Pydantic model class | **Direct path** - string to Pydantic |
+| `string_to_pydantic_code()` | String syntax    | Python code string   | **Code generation** - for templates  |
 | `string_to_openapi()`       | String syntax    | OpenAPI schema dict  | **Direct path** - string to OpenAPI  |
+| `validate_string_syntax()`  | String syntax    | Validation result    | Check syntax and get feedback        |
 | `json_schema_to_pydantic()` | JSON Schema dict | Pydantic model class | When you already have JSON Schema    |
 | `json_schema_to_openapi()`  | JSON Schema dict | OpenAPI schema dict  | When you already have JSON Schema    |
 | Built-in presets            | Configuration    | JSON Schema dict     | Ready-to-use common schemas          |
@@ -124,7 +126,7 @@ schema = string_to_json_schema("name:string, email:email")
 ### 🐍 Pydantic Models (Python Classes)
 
 ```python
-from simple_schema.integrations.pydantic import string_to_pydantic
+from simple_schema import string_to_pydantic
 
 # Direct conversion: String syntax → Pydantic model
 UserModel = string_to_pydantic('User', "name:string(min=1, max=100), email:email, age:int?")
@@ -132,13 +134,29 @@ UserModel = string_to_pydantic('User', "name:string(min=1, max=100), email:email
 # Use the model for validation
 user = UserModel(name="John Doe", email="john@example.com")
 print(user.model_dump_json())  # {"name": "John Doe", "email": "john@example.com"}
+```
 
-# Alternative: Two-step process if you need the JSON Schema too
-from simple_schema import string_to_json_schema
-from simple_schema.integrations.pydantic import json_schema_to_pydantic
+### 🔧 Code Generation (For Templates & Tools)
 
-json_schema = string_to_json_schema("name:string, email:email")
-UserModel = json_schema_to_pydantic('User', json_schema)
+```python
+from simple_schema import string_to_pydantic_code
+
+# Generate Pydantic model code as a string
+code = string_to_pydantic_code('User', "name:string(min=1, max=100), email:email, age:int?")
+print(code)
+
+# Output:
+# from pydantic import BaseModel, Field
+# from typing import Optional, Union
+#
+# class User(BaseModel):
+#     name: str = Field(min_length=1, max_length=100)
+#     email: str = Field(format='email')
+#     age: Optional[int] = None
+
+# Perfect for code generators, templates, or saving to files
+with open('models.py', 'w') as f:
+    f.write(code)
 ```
 
 ### 🌐 OpenAPI Schemas (API Documentation)
@@ -195,13 +213,18 @@ contact = contact_schema(include_company=True)
 ## ✅ Validation
 
 ```python
-from simple_schema.parsing import validate_string_syntax
+from simple_schema import validate_string_syntax
 
 # Validate your schema syntax
 result = validate_string_syntax("name:string, email:email, age:int?")
 
 print(f"Valid: {result['valid']}")
 print(f"Features used: {result['features_used']}")
+print(f"Field count: {len(result['parsed_fields'])}")
+
+if result['warnings']:
+    for warning in result['warnings']:
+        print(f"⚠️ {warning}")
 ```
 
 ## 🏗️ Common Use Cases
@@ -226,7 +249,7 @@ schema = string_to_json_schema("""
 ### 🔧 FastAPI Development
 
 ```python
-from simple_schema.integrations.pydantic import string_to_pydantic
+from simple_schema import string_to_pydantic
 
 # Direct conversion: String → Pydantic model
 UserModel = string_to_pydantic('User', "name:string, email:email, age:int?")
@@ -235,6 +258,25 @@ UserModel = string_to_pydantic('User', "name:string, email:email, age:int?")
 @app.post("/users/")
 async def create_user(user: UserModel):
     return user
+```
+
+### 🏗️ Code Generation & Templates
+
+```python
+from simple_schema import string_to_pydantic_code
+
+# Generate multiple model files
+schemas = {
+    'User': "name:string, email:email, role:enum(admin, user)",
+    'Product': "name:string, price:number(min=0), category:string",
+    'Order': "user_id:uuid, products:[uuid], total:number(min=0)"
+}
+
+for model_name, schema_str in schemas.items():
+    code = string_to_pydantic_code(model_name, schema_str)
+    with open(f'models/{model_name.lower()}.py', 'w') as f:
+        f.write(code)
+    print(f"Generated {model_name} model")
 ```
 
 ### 📋 Configuration Validation

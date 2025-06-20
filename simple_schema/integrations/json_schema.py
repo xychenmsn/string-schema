@@ -247,6 +247,23 @@ def _order_schema_fields(schema: Dict[str, Any]) -> Dict[str, Any]:
     return ordered
 
 
+# Clear function name alias
+def json_schema_to_openapi(json_schema: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Convert JSON Schema to OpenAPI 3.0 schema format.
+
+    Args:
+        json_schema: Standard JSON Schema dictionary
+
+    Returns:
+        OpenAPI compatible schema dictionary
+
+    Example:
+        openapi_schema = json_schema_to_openapi(json_schema)
+    """
+    return convert_to_openapi_schema(json_schema)
+
+
 def convert_to_openapi_schema(json_schema: Dict[str, Any]) -> Dict[str, Any]:
     """
     Convert JSON Schema to OpenAPI 3.0 schema format.

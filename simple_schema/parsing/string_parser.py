@@ -569,6 +569,40 @@ def _normalize_type_name(type_name: str) -> str:
     return type_mapping.get(type_name.lower(), 'string')
 
 
+# Clear function name aliases
+def string_to_json_schema(schema_str: str) -> Dict[str, Any]:
+    """
+    Convert string syntax to JSON Schema dictionary.
+
+    Args:
+        schema_str: String schema definition (e.g., "name:string, email:email")
+
+    Returns:
+        JSON Schema dictionary
+
+    Example:
+        schema = string_to_json_schema("name:string, email:email")
+    """
+    return parse_string_schema(schema_str)
+
+
+def validate_string_syntax(schema_str: str) -> Dict[str, Any]:
+    """
+    Validate string schema syntax and return detailed feedback.
+
+    Args:
+        schema_str: String schema definition to validate
+
+    Returns:
+        Dictionary with validation results: valid, errors, warnings, features_used, etc.
+
+    Example:
+        result = validate_string_syntax("name:string, email:email")
+        print(f"Valid: {result['valid']}")
+    """
+    return validate_string_schema(schema_str)
+
+
 def validate_string_schema(schema_str: str) -> Dict[str, Any]:
     """Validate enhanced string schema with detailed feedback"""
     result = {

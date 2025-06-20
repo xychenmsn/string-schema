@@ -110,6 +110,24 @@ def _simple_field_to_pydantic(field: SimpleField) -> tuple:
     return python_type, Field(**field_kwargs) if field_kwargs else Field()
 
 
+# Clear function name alias
+def json_schema_to_pydantic(name: str, json_schema: Dict[str, Any]) -> Type[BaseModel]:
+    """
+    Create Pydantic model from JSON Schema dictionary.
+
+    Args:
+        name: Name of the model class
+        json_schema: JSON Schema dictionary
+
+    Returns:
+        Dynamically created Pydantic model class
+
+    Example:
+        UserModel = json_schema_to_pydantic('User', json_schema)
+    """
+    return create_pydantic_from_json_schema(name, json_schema)
+
+
 def create_pydantic_from_json_schema(name: str, json_schema: Dict[str, Any]) -> Type[BaseModel]:
     """
     Create Pydantic model from JSON Schema.
@@ -336,6 +354,78 @@ def string_to_pydantic(name: str, schema_str: str) -> Type[BaseModel]:
     # Convert string to JSON Schema, then to Pydantic
     json_schema = parse_string_schema(schema_str)
     return create_pydantic_from_json_schema(name, json_schema)
+
+
+def string_to_pydantic_code(name: str, schema_str: str) -> str:
+    """
+    Generate Pydantic model code directly from string syntax.
+
+    Args:
+        name: Name of the model class
+        schema_str: String schema definition (e.g., "name:string, email:email")
+
+    Returns:
+        Python code string for the Pydantic model
+
+    Example:
+        code = string_to_pydantic_code('User', "name:string, email:email, age:int?")
+        print(code)
+        # Output:
+        # from pydantic import BaseModel, Field
+        # from typing import Optional, Union
+        #
+        # class User(BaseModel):
+        #     name: str
+        #     email: str = Field(format='email')
+        #     age: Optional[int] = None
+    """
+    # Import here to avoid circular imports
+    from ..parsing.string_parser import parse_string_schema
+
+    # Convert string to JSON Schema, then to SimpleField objects, then to code
+    json_schema = parse_string_schema(schema_str)
+
+    # Convert JSON Schema back to SimpleField objects for code generation
+    # This is a bit roundabout, but maintains compatibility with existing code
+    properties = json_schema.get('properties', {})
+    required_fields = set(json_schema.get('required', []))
+
+    fields = {}
+    for field_name, field_schema in properties.items():
+        # Convert JSON Schema property back to SimpleField
+        simple_field = _json_schema_to_simple_field(field_schema, field_name in required_fields)
+        fields[field_name] = simple_field
+
+    return generate_pydantic_code(name, fields)
+
+
+def _json_schema_to_simple_field(field_schema: Dict[str, Any], required: bool) -> SimpleField:
+    """Convert JSON Schema property back to SimpleField for code generation"""
+    from ..core.fields import SimpleField
+
+    field_type = field_schema.get('type', 'string')
+    format_hint = field_schema.get('format')
+
+    # Handle constraints
+    kwargs = {
+        'required': required,
+        'description': field_schema.get('description', ''),
+    }
+
+    if 'minimum' in field_schema:
+        kwargs['min_val'] = field_schema['minimum']
+    if 'maximum' in field_schema:
+        kwargs['max_val'] = field_schema['maximum']
+    if 'minLength' in field_schema:
+        kwargs['min_length'] = field_schema['minLength']
+    if 'maxLength' in field_schema:
+        kwargs['max_length'] = field_schema['maxLength']
+    if 'enum' in field_schema:
+        kwargs['choices'] = field_schema['enum']
+    if format_hint:
+        kwargs['format_hint'] = format_hint
+
+    return SimpleField(field_type, **kwargs)
 
 
 def generate_pydantic_code(name: str, fields: Dict[str, SimpleField]) -> str:
