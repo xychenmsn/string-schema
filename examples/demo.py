@@ -15,12 +15,16 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import the organized Simple Schema modules
 from simple_schema import (
-    SimpleField,
-    simple_schema,
-    list_of_objects_schema,
-    simple_array_schema,
-    quick_pydantic_model,
-    parse_string_schema,
+    string_to_json_schema,
+    string_to_pydantic,
+    string_to_pydantic_code,
+    validate_string_syntax,
+    # Legacy imports for demo compatibility
+    parse_string_schema
+)
+
+# Import examples from examples module
+from simple_schema.examples.presets import (
     user_schema,
     product_schema,
     contact_schema

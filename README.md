@@ -22,7 +22,6 @@ Simple Schema takes human-readable text descriptions and converts them into stru
 | `validate_string_syntax()`  | String syntax    | Validation result    | Check syntax and get feedback        |
 | `json_schema_to_pydantic()` | JSON Schema dict | Pydantic model class | When you already have JSON Schema    |
 | `json_schema_to_openapi()`  | JSON Schema dict | OpenAPI schema dict  | When you already have JSON Schema    |
-| Built-in presets            | Configuration    | JSON Schema dict     | Ready-to-use common schemas          |
 
 ### 🎯 Key Scenarios
 
@@ -175,17 +174,6 @@ json_schema = string_to_json_schema("name:string, email:email")
 openapi_schema = json_schema_to_openapi(json_schema)
 ```
 
-### 📦 Built-in Presets (Ready-to-use Schemas)
-
-```python
-from simple_schema import user_schema, product_schema, contact_schema
-
-# Get pre-built JSON Schema dictionaries
-user = user_schema(include_email=True, include_phone=True)
-product = product_schema(include_price=True, include_description=True)
-contact = contact_schema(include_company=True)
-```
-
 ## 🎨 String Syntax Reference
 
 ### Basic Types
@@ -300,6 +288,19 @@ config_schema = string_to_json_schema("""
 - **[String Syntax Guide](docs/string-syntax.md)** - Complete syntax reference
 - **[API Reference](docs/api-reference.md)** - Full API documentation
 - **[Examples](docs/examples.md)** - Practical examples and patterns
+
+## 📋 Example Schemas
+
+Ready-to-use schema examples are available in the `examples/` directory:
+
+```python
+# Import example schemas if needed
+from simple_schema.examples.presets import user_schema, product_schema
+from simple_schema.examples.recipes import create_ecommerce_product_schema
+
+# Or better yet, use string syntax directly:
+user_schema = string_to_json_schema("name:string, email:email, age:int?")
+```
 
 ## 🧪 Testing
 

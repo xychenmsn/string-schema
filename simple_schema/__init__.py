@@ -41,14 +41,8 @@ from .integrations.json_schema import (
     convert_to_openapi_schema
 )
 
-# Built-in presets
-from .examples.presets import (
-    user_schema,
-    product_schema,
-    contact_schema,
-    article_schema,
-    event_schema
-)
+# Note: Built-in presets moved to examples/ directory
+# Import them from simple_schema.examples.presets if needed
 
 __version__ = "1.0.0"
 __author__ = "Simple Schema Team"
@@ -64,13 +58,6 @@ __all__ = [
     # 🔄 Intermediate conversion functions
     "json_schema_to_pydantic",      # JSON Schema → Pydantic model
     "json_schema_to_openapi",       # JSON Schema → OpenAPI schema
-
-    # 📦 Built-in presets
-    "user_schema",
-    "product_schema",
-    "contact_schema",
-    "article_schema",
-    "event_schema",
 
     # 🔙 Legacy names (for backward compatibility)
     "parse_string_schema",

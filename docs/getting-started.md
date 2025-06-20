@@ -42,17 +42,15 @@ pip install pytest  # For running tests
 Let's start with a simple example:
 
 ```python
-from simple_schema import SimpleField, simple_schema
+from simple_schema import string_to_json_schema
 
-# Define fields using SimpleField objects
-fields = {
-    'name': SimpleField('string', 'Full name', min_length=1, max_length=100),
-    'age': SimpleField('integer', 'Age in years', min_val=0, max_val=120),
-    'email': SimpleField('string', 'Email address', format_hint='email')
-}
+# Define schema using intuitive string syntax
+schema = string_to_json_schema("""
+name:string(min=1, max=100),
+age:int(0, 120),
+email:email
+""")
 
-# Generate JSON Schema
-schema = simple_schema(fields)
 print(schema)
 ```
 
@@ -89,7 +87,7 @@ This creates a JSON Schema that looks like:
 For even simpler syntax, you can define schemas using strings:
 
 ```python
-from simple_schema import parse_string_schema
+from simple_schema import string_to_json_schema
 
 # Define schema using string syntax
 schema_str = """
@@ -101,21 +99,27 @@ schema_str = """
 }
 """
 
-schema = parse_string_schema(schema_str)
+schema = string_to_json_schema(schema_str)
 ```
 
-## Built-in Schema Presets
+## Example Schemas
 
-Simple Schema includes common schema patterns:
+Simple Schema includes example patterns in the examples directory:
 
 ```python
-from simple_schema import user_schema, product_schema
+# Import examples if needed (optional)
+from simple_schema.examples.presets import user_schema, product_schema
 
-# Use built-in user schema
+# Use example user schema
 user = user_schema(include_email=True, include_phone=True)
 
-# Use built-in product schema
-product = product_schema(include_price=True, include_description=True)
+# Or better yet, use string syntax directly:
+user_schema = string_to_json_schema("""
+name:string(min=1, max=100),
+email:email,
+age:int(0, 120)?,
+phone:phone?
+""")
 ```
 
 ## Working with Arrays
@@ -124,14 +128,14 @@ Define arrays of simple types or objects:
 
 ```python
 # Simple arrays
-tags_schema = parse_string_schema("[string]")
-scores_schema = parse_string_schema("[int]")
+tags_schema = string_to_json_schema("[string]")
+scores_schema = string_to_json_schema("[int]")
 
 # Arrays with constraints
-limited_tags = parse_string_schema("[string](max=5)")
+limited_tags = string_to_json_schema("[string](max=5)")
 
 # Arrays of objects
-users_schema = parse_string_schema("[{name:string, email:email}]")
+users_schema = string_to_json_schema("[{name:string, email:email}]")
 ```
 
 ## Special Types and Format Hints
