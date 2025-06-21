@@ -2,37 +2,58 @@
 
 Complete API documentation for Simple Schema.
 
-## Core API
+## Main Functions
 
-### SimpleField
-
-The core field definition class.
+### string_to_json_schema()
 
 ```python
-class SimpleField:
-    def __init__(self, field_type: str, description: str = "", required: bool = True,
-                 default: Any = None, min_val: Optional[Union[int, float]] = None,
-                 max_val: Optional[Union[int, float]] = None, min_length: Optional[int] = None,
-                 max_length: Optional[int] = None, choices: Optional[List[Any]] = None,
-                 min_items: Optional[int] = None, max_items: Optional[int] = None,
-                 format_hint: Optional[str] = None, union_types: Optional[List[str]] = None)
+def string_to_json_schema(schema_str: str) -> Dict[str, Any]
 ```
 
-**Parameters:**
-- `field_type`: The base type (string, integer, number, boolean)
-- `description`: Human-readable description
-- `required`: Whether the field is required (default: True)
-- `default`: Default value if field is not provided
-- `min_val`, `max_val`: Numeric constraints
-- `min_length`, `max_length`: String length constraints
-- `choices`: List of allowed values (enum)
-- `min_items`, `max_items`: Array size constraints
-- `format_hint`: Special format (email, url, datetime, etc.)
-- `union_types`: List of types for union fields
+Convert string syntax to JSON Schema.
 
-**Methods:**
-- `to_dict()`: Convert to dictionary representation
-- `from_dict(data)`: Create from dictionary (class method)
+**Example:**
+
+```python
+from simple_schema import string_to_json_schema
+
+schema = string_to_json_schema("name:string, email:email, age:int?")
+print(schema)  # Complete JSON Schema
+```
+
+### string_to_model()
+
+```python
+def string_to_model(schema_str: str, model_name: str = "GeneratedModel") -> Type[BaseModel]
+```
+
+Convert string syntax to Pydantic model.
+
+**Example:**
+
+```python
+from simple_schema import string_to_model
+
+UserModel = string_to_model("name:string, email:email, active:bool")
+user = UserModel(name="Alice", email="alice@example.com", active=True)
+```
+
+### string_to_model_code()
+
+```python
+def string_to_model_code(model_name: str, schema_str: str) -> str
+```
+
+Generate Pydantic model code as string.
+
+**Example:**
+
+```python
+from simple_schema import string_to_model_code
+
+code = string_to_model_code("User", "name:string, email:email")
+print(code)  # Complete Pydantic model class code
+```
 
 ### Schema Builders
 
@@ -45,6 +66,7 @@ def simple_schema(fields: Dict[str, Union[str, SimpleField]]) -> Dict[str, Any]
 Generate JSON Schema from field definitions.
 
 **Example:**
+
 ```python
 fields = {
     'name': SimpleField('string', 'Full name'),
@@ -82,274 +104,230 @@ def quick_pydantic_model(name: str, fields: Dict[str, Union[str, SimpleField]]) 
 
 Create Pydantic model from field definitions.
 
-## String Parsing API
-
-### parse_string_schema()
+### string_to_openapi()
 
 ```python
-def parse_string_schema(schema_str: str, is_list: bool = False) -> Dict[str, Any]
+def string_to_openapi(schema_str: str) -> Dict[str, Any]
 ```
 
-Parse string-based schema definition into JSON Schema.
+Convert string syntax to OpenAPI schema.
 
 **Example:**
+
 ```python
-schema = parse_string_schema("name:string, age:int, email:email")
+from simple_schema import string_to_openapi
+
+openapi_schema = string_to_openapi("name:string, email:email")
+print(openapi_schema)  # OpenAPI-compatible schema
 ```
 
-### validate_string_schema()
+## Data Validation Functions
+
+### validate_to_dict()
 
 ```python
-def validate_string_schema(schema_str: str) -> Dict[str, Any]
+def validate_to_dict(data: Dict[str, Any], schema_str: str) -> Dict[str, Any]
 ```
 
-Validate string schema and return detailed feedback.
+Validate data against schema and return clean dictionary.
 
-**Returns:**
+**Example:**
+
 ```python
-{
-    'valid': bool,
-    'errors': List[str],
-    'warnings': List[str],
-    'parsed_fields': Dict[str, Any],
-    'generated_schema': Dict[str, Any],
-    'features_used': List[str]
+from simple_schema import validate_to_dict
+
+raw_data = {"name": "John", "email": "john@example.com", "age": "25"}
+clean_data = validate_to_dict(raw_data, "name:string, email:email, age:int?")
+print(clean_data)  # {"name": "John", "email": "john@example.com", "age": 25}
+```
+
+### validate_to_model()
+
+```python
+def validate_to_model(data: Dict[str, Any], schema_str: str) -> BaseModel
+```
+
+Validate data against schema and return Pydantic model instance.
+
+**Example:**
+
+```python
+from simple_schema import validate_to_model
+
+raw_data = {"name": "John", "email": "john@example.com", "active": True}
+user_model = validate_to_model(raw_data, "name:string, email:email, active:bool")
+print(user_model.name)  # "John" - Full type safety
+```
+
+### validate_string_syntax()
+
+```python
+def validate_string_syntax(schema_str: str) -> Dict[str, Any]
+```
+
+Validate string schema syntax and return detailed feedback.
+
+**Example:**
+
+```python
+from simple_schema import validate_string_syntax
+
+result = validate_string_syntax("name:string, email:email, age:int?")
+print(f"Valid: {result['valid']}")  # True
+print(f"Features: {result['features_used']}")  # ['basic_types', 'optional_fields']
+```
+
+## Reverse Conversion Functions
+
+### model_to_string()
+
+```python
+def model_to_string(model: Type[BaseModel]) -> str
+```
+
+Convert Pydantic model back to string syntax.
+
+**Example:**
+
+```python
+from simple_schema import string_to_model, model_to_string
+
+UserModel = string_to_model("name:string, email:email, active:bool")
+schema_string = model_to_string(UserModel)
+print(schema_string)  # "name:string, email:email, active:bool"
+```
+
+### json_schema_to_string()
+
+```python
+def json_schema_to_string(json_schema: Dict[str, Any]) -> str
+```
+
+Convert JSON Schema to string syntax.
+
+**Example:**
+
+```python
+from simple_schema import json_schema_to_string
+
+json_schema = {
+    "type": "object",
+    "properties": {
+        "name": {"type": "string"},
+        "email": {"type": "string", "format": "email"}
+    },
+    "required": ["name", "email"]
 }
+simple_syntax = json_schema_to_string(json_schema)
+print(simple_syntax)  # "name:string, email:email"
 ```
 
-### get_string_schema_examples()
+## Function Decorators
+
+### @returns_dict()
 
 ```python
-def get_string_schema_examples() -> Dict[str, Dict[str, Any]]
+def returns_dict(schema_str: str)
 ```
 
-Get all built-in string schema examples.
+Decorator that validates function return values to clean dictionaries.
 
-## Validation API
-
-### validate_schema()
+**Example:**
 
 ```python
-def validate_schema(schema: Dict[str, Any]) -> Dict[str, Any]
+from simple_schema import returns_dict
+
+@returns_dict("id:string, name:string, active:bool")
+def create_user(name):
+    return {"id": "123", "name": name, "active": True, "extra": "ignored"}
+    # Returns: {"id": "123", "name": "Alice", "active": True}
+    # Note: 'extra' field filtered out
 ```
 
-Validate JSON Schema compliance.
-
-### validate_simple_field()
+### @returns_model()
 
 ```python
-def validate_simple_field(field: SimpleField) -> Dict[str, Any]
+def returns_model(schema_str: str)
 ```
 
-Validate SimpleField instance.
+Decorator that validates function return values to Pydantic models.
 
-## Built-in Schemas
-
-### User Schemas
+**Example:**
 
 ```python
-def user_schema(include_email: bool = True, include_phone: bool = False, 
-               include_profile: bool = False, include_preferences: bool = False) -> Dict[str, Any]
+from simple_schema import returns_model
 
-def user_list_schema(**kwargs) -> Dict[str, Any]
+@returns_model("name:string, email:string")
+def process_user(raw_input):
+    return {"name": raw_input["name"], "email": raw_input["email"], "junk": "data"}
+    # Returns: UserModel(name="Bob", email="bob@test.com")
+    # Note: Returns typed Pydantic model, 'junk' field filtered out
 ```
 
-### Product Schemas
+## String Syntax Reference
 
-```python
-def product_schema(include_price: bool = True, include_description: bool = True,
-                  include_images: bool = False, include_reviews: bool = False) -> Dict[str, Any]
+### Basic Types
 
-def product_list_schema(**kwargs) -> Dict[str, Any]
-```
+- `string`, `int`, `number`, `bool` → Basic data types
+- `email`, `url`, `datetime`, `date`, `uuid`, `phone` → Special validated types
 
-### Contact Schemas
+### Field Modifiers
 
-```python
-def contact_schema(include_company: bool = False, include_address: bool = False,
-                  include_social: bool = False) -> Dict[str, Any]
-
-def contact_list_schema(**kwargs) -> Dict[str, Any]
-```
-
-### Article Schemas
-
-```python
-def article_schema(include_summary: bool = True, include_tags: bool = False,
-                  include_metadata: bool = False) -> Dict[str, Any]
-
-def article_list_schema(**kwargs) -> Dict[str, Any]
-```
-
-### Event Schemas
-
-```python
-def event_schema(include_location: bool = True, include_attendees: bool = False) -> Dict[str, Any]
-
-def event_list_schema(**kwargs) -> Dict[str, Any]
-```
-
-## Integration APIs
-
-### Pydantic Integration
-
-```python
-from simple_schema.integrations.pydantic import (
-    create_pydantic_model,
-    create_pydantic_from_json_schema,
-    validate_pydantic_compatibility,
-    generate_pydantic_code
-)
-```
-
-#### create_pydantic_model()
-
-```python
-def create_pydantic_model(name: str, fields: Dict[str, Union[str, SimpleField]], 
-                         base_class: Type[BaseModel] = BaseModel) -> Type[BaseModel]
-```
-
-### JSON Schema Integration
-
-```python
-from simple_schema.integrations.json_schema import (
-    to_json_schema,
-    to_json_schema_with_examples,
-    validate_json_schema_compliance,
-    optimize_json_schema
-)
-```
-
-#### to_json_schema()
-
-```python
-def to_json_schema(fields: Dict[str, Union[str, SimpleField]], 
-                  title: str = "Generated Schema",
-                  description: str = "",
-                  schema_version: str = "https://json-schema.org/draft/2020-12/schema") -> Dict[str, Any]
-```
-
-### OpenAPI Integration
-
-```python
-from simple_schema.integrations.openapi import (
-    to_openapi_schema,
-    create_openapi_component,
-    create_openapi_request_body,
-    create_openapi_response,
-    validate_openapi_compatibility
-)
-```
-
-#### to_openapi_schema()
-
-```python
-def to_openapi_schema(fields: Dict[str, Union[str, SimpleField]],
-                     title: str = "Generated Schema",
-                     description: str = "",
-                     version: str = "1.0.0") -> Dict[str, Any]
-```
-
-## Recipe APIs
+- `field_name:type` → Required field
+- `field_name:type?` → Optional field
+- `field_name:type(constraints)` → Field with validation
 
 ### Common Patterns
 
-```python
-from simple_schema.examples.recipes import (
-    create_list_schema,
-    create_nested_schema,
-    create_enum_schema,
-    create_union_schema,
-    create_pagination_schema,
-    create_api_response_schema,
-    create_ecommerce_product_schema,
-    create_blog_post_schema
-)
-```
+- `string(min=1,max=100)` → Length constraints
+- `int(0,120)` → Range constraints
+- `[string]` → Simple arrays
+- `[{name:string, email:email}]` → Object arrays
+- `status:enum(active,inactive)` → Enum values
+- `id:string|uuid` → Union types
 
-#### create_list_schema()
+### Examples
 
 ```python
-def create_list_schema(item_fields: Dict[str, Union[str, SimpleField]],
-                      description: str = "List of items",
-                      min_items: Optional[int] = None,
-                      max_items: Optional[int] = None) -> Dict[str, Any]
+# Simple schema
+"name:string, email:email, age:int?"
+
+# With constraints
+"name:string(min=1,max=100), age:int(0,120), email:email"
+
+# Arrays and objects
+"tags:[string], user:{name:string, email:email}"
+
+# Enums and unions
+"status:enum(active,inactive), id:string|uuid"
 ```
-
-#### create_pagination_schema()
-
-```python
-def create_pagination_schema(item_fields: Dict[str, Union[str, SimpleField]],
-                           include_metadata: bool = True) -> Dict[str, Any]
-```
-
-#### create_api_response_schema()
-
-```python
-def create_api_response_schema(data_fields: Dict[str, Union[str, SimpleField]],
-                             include_status: bool = True,
-                             include_metadata: bool = False) -> Dict[str, Any]
-```
-
-## Utility Functions
-
-### Field Creation Helpers
-
-```python
-from simple_schema.core.fields import (
-    create_enhanced_field,
-    create_special_type_field,
-    create_enum_field,
-    create_union_field
-)
-```
-
-### Optimization
-
-```python
-from simple_schema.parsing.optimizer import (
-    optimize_string_schema,
-    suggest_improvements,
-    simplify_schema,
-    infer_types
-)
-```
-
-## Error Handling
-
-Simple Schema uses standard Python exceptions:
-
-- `ValueError`: Invalid field definitions or schema structures
-- `TypeError`: Incorrect parameter types
-- `KeyError`: Missing required fields or properties
 
 ## Type Hints
 
-Simple Schema is fully typed. Import types:
+Simple Schema is fully typed:
 
 ```python
 from typing import Dict, List, Any, Optional, Union, Type
 from pydantic import BaseModel
 ```
 
-## Constants
+## Supported Types
 
-### Supported Field Types
+### Basic Types
 
-```python
-BASIC_TYPES = ['string', 'integer', 'number', 'boolean']
-SPECIAL_TYPES = ['email', 'url', 'uri', 'datetime', 'date', 'uuid', 'phone']
-```
+- `string`, `int`, `number`, `bool`
 
-### Format Mappings
+### Special Types
 
-```python
-FORMAT_MAPPING = {
-    'email': 'email',
-    'url': 'uri',
-    'uri': 'uri',
-    'datetime': 'date-time',
-    'date': 'date',
-    'uuid': 'uuid'
-}
-```
+- `email`, `url`, `datetime`, `date`, `uuid`, `phone`
+
+### Modifiers
+
+- `?` → Optional field
+- `(constraints)` → Validation constraints
+- `|` → Union types
+- `[]` → Arrays
+- `{}` → Objects
+- `enum()` → Enumerated values
+
+This covers the main Simple Schema API. For more examples, see the [Examples](examples.md) documentation.

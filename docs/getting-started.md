@@ -2,39 +2,16 @@
 
 Simple Schema is a Python library that makes it easy to define data schemas using intuitive syntax that works well with Large Language Models (LLMs) for data extraction and validation.
 
-## 🎯 Status: Production Ready
-
-✅ **All tests passing** (66/66 tests pass)
-✅ **Critical bugs fixed** (array parsing now works correctly)
-✅ **Complete feature set** (all enhanced syntax working)
-✅ **Comprehensive documentation** (getting started, API reference, examples)
-✅ **Clean architecture** (modular, extensible design)
-
 ## Installation
-
-### Basic Installation
-
-Install Simple Schema using pip:
 
 ```bash
 pip install simple-schema
 ```
 
-### With Optional Dependencies
+Optional dependencies:
 
 ```bash
 pip install pydantic  # For Pydantic model generation
-```
-
-### Development Installation
-
-For contributing to the project:
-
-```bash
-git clone <repository-url>
-cd simple-schema
-pip install -e .
-pip install pytest  # For running tests
 ```
 
 ## Your First Schema
@@ -45,308 +22,200 @@ Let's start with a simple example:
 from simple_schema import string_to_json_schema
 
 # Define schema using intuitive string syntax
-schema = string_to_json_schema("""
-name:string(min=1, max=100),
-age:int(0, 120),
-email:email
-""")
+schema = string_to_json_schema("name:string, email:email, age:int?")
 
 print(schema)
+# {
+#   "type": "object",
+#   "properties": {
+#     "name": {"type": "string"},
+#     "email": {"type": "string", "format": "email"},
+#     "age": {"type": "integer"}
+#   },
+#   "required": ["name", "email"]
+# }
 ```
 
-This creates a JSON Schema that looks like:
-
-```json
-{
-  "type": "object",
-  "properties": {
-    "name": {
-      "type": "string",
-      "description": "Full name",
-      "minLength": 1,
-      "maxLength": 100
-    },
-    "age": {
-      "type": "integer",
-      "description": "Age in years",
-      "minimum": 0,
-      "maximum": 120
-    },
-    "email": {
-      "type": "string",
-      "description": "Email address",
-      "format": "email"
-    }
-  },
-  "required": ["name", "age", "email"]
-}
-```
-
-## String-Based Schema Definition
-
-For even simpler syntax, you can define schemas using strings:
+## Create Pydantic Models
 
 ```python
-from simple_schema import string_to_json_schema
+from simple_schema import string_to_model
 
-# Define schema using string syntax
-schema_str = """
-{
-    name: string(min=1, max=100),
-    age: int(0, 120),
-    email: email,
-    status: enum(active, inactive, pending)
-}
-"""
+# Create Pydantic model from string syntax
+UserModel = string_to_model("name:string, email:email, active:bool")
 
-schema = string_to_json_schema(schema_str)
+# Use immediately
+user = UserModel(name="Alice", email="alice@example.com", active=True)
+print(user.model_dump_json())  # {"name": "Alice", "email": "alice@example.com", "active": true}
 ```
 
-## Example Schemas
-
-Simple Schema includes example patterns in the examples directory:
+## Data Validation
 
 ```python
-# Import examples if needed (optional)
-from simple_schema.examples.presets import user_schema, product_schema
+from simple_schema import validate_to_dict, validate_to_model
 
-# Use example user schema
-user = user_schema(include_email=True, include_phone=True)
+# Example raw data
+raw_data = {
+    "name": "John Doe",
+    "email": "john@example.com",
+    "age": "25",  # String that needs conversion
+    "extra": "ignored"  # Will be filtered out
+}
 
-# Or better yet, use string syntax directly:
-user_schema = string_to_json_schema("""
-name:string(min=1, max=100),
-email:email,
-age:int(0, 120)?,
-phone:phone?
-""")
+# Validate to clean dictionaries
+user_dict = validate_to_dict(raw_data, "name:string, email:email, age:int?")
+print(user_dict)  # {"name": "John Doe", "email": "john@example.com", "age": 25}
+
+# Validate to typed models
+user_model = validate_to_model(raw_data, "name:string, email:email, age:int?")
+print(user_model.name)  # "John Doe" - Full type safety
 ```
 
 ## Working with Arrays
 
-Define arrays of simple types or objects:
-
 ```python
 # Simple arrays
 tags_schema = string_to_json_schema("[string]")
-scores_schema = string_to_json_schema("[int]")
+print(tags_schema)  # Array of strings schema
 
 # Arrays with constraints
 limited_tags = string_to_json_schema("[string](max=5)")
+print(limited_tags)  # Array with max 5 items
 
 # Arrays of objects
 users_schema = string_to_json_schema("[{name:string, email:email}]")
+print(users_schema)  # Array of user objects schema
 ```
 
-## Special Types and Format Hints
-
-Simple Schema supports special types that provide hints for better data extraction:
+## Special Types
 
 ```python
-schema_str = """
-{
-    email: email,           # Email validation
-    website: url,           # URL validation
-    created: datetime,      # DateTime parsing
-    birthday: date,         # Date parsing
-    id: uuid,              # UUID validation
-    phone: phone           # Phone formatting
-}
-"""
+# Special types provide format hints
+schema = string_to_json_schema("email:email, website:url, created:datetime, id:uuid")
+print(schema)  # Schema with format validation
 ```
 
 ## Enum and Union Types
 
-Define constrained values and flexible types:
-
 ```python
 # Enum types for specific choices
-status_schema = parse_string_schema("status: enum(active, inactive, pending)")
+status_schema = string_to_json_schema("status:enum(active,inactive,pending)")
+print(status_schema)  # Enum schema
 
 # Union types for flexible data
-id_schema = parse_string_schema("id: string|uuid")
-value_schema = parse_string_schema("value: string|int|null")
+id_schema = string_to_json_schema("id:string|uuid")
+print(id_schema)  # Union type schema
 ```
 
-## Integration with Pydantic
-
-Convert schemas to Pydantic models:
+## Code Generation
 
 ```python
-from simple_schema import quick_pydantic_model
+from simple_schema import string_to_model_code
 
-fields = {
-    'name': SimpleField('string', 'Full name'),
-    'age': SimpleField('integer', 'Age', min_val=0)
-}
+# Generate Pydantic model code as string
+code = string_to_model_code("User", "name:string, email:email, active:bool")
+print(code)
+# Output: Complete Pydantic model class as string
 
-# Create Pydantic model
-UserModel = quick_pydantic_model('User', fields)
-
-# Use the model
-user = UserModel(name="John Doe", age=30)
-print(user.name)  # "John Doe"
+# Save to file
+with open('user_model.py', 'w') as f:
+    f.write(code)
 ```
 
 ## Validation
 
-Validate your schemas:
-
 ```python
-from simple_schema.parsing import validate_string_schema
-from simple_schema.core.validators import validate_schema
+from simple_schema import validate_string_syntax
 
-# Validate string schema
-result = validate_string_schema("name:string, age:int, email:email")
-print(f"Valid: {result['valid']}")
-print(f"Features used: {result['features_used']}")
+# Validate string schema syntax
+result = validate_string_syntax("name:string, email:email, age:int?")
+print(f"Valid: {result['valid']}")  # True
+print(f"Features used: {result['features_used']}")  # ['basic_types', 'optional_fields']
 
-# Validate JSON schema
-json_schema = simple_schema(fields)
-validation = validate_schema(json_schema)
-print(f"Valid: {validation['valid']}")
+# Example with invalid syntax
+bad_result = validate_string_syntax("name:invalid_type")
+print(f"Valid: {bad_result['valid']}")  # False
+print(f"Errors: {bad_result['errors']}")  # ['Unknown type: invalid_type']
 ```
 
-## 🎓 Progressive Examples: From Simple to Complex
+## Progressive Examples
 
-### 1. 🌱 Extremely Simple - Single Field
-
-```python
-from simple_schema import parse_string_schema
-
-# Just a name field
-schema = parse_string_schema("name:string")
-```
-
-### 2. 🌿 Basic - Multiple Fields
+### 1. Single Field
 
 ```python
-# Basic user information
-schema = parse_string_schema("name:string, age:int, active:bool")
+from simple_schema import string_to_json_schema
+
+schema = string_to_json_schema("name:string")
+print(schema)  # Basic string field schema
 ```
 
-### 3. 🌳 Adding Constraints
+### 2. Multiple Fields
 
 ```python
-# With validation constraints
-schema = parse_string_schema("""
-name:string(min=1, max=100),
-age:int(0, 120),
-email:email
-""")
+schema = string_to_json_schema("name:string, age:int, active:bool")
+print(schema)  # Multi-field object schema
 ```
 
-### 4. 🌲 Optional Fields
+### 3. With Constraints
 
 ```python
-# Some fields are optional (marked with ?)
-schema = parse_string_schema("""
-name:string(min=1, max=100),
-email:email,
-phone:phone?,
-bio:text(max=500)?
-""")
+schema = string_to_json_schema("name:string(min=1,max=100), age:int(0,120), email:email")
+print(schema)  # Schema with validation constraints
 ```
 
-### 5. 🏞️ Arrays
+### 4. Optional Fields
 
 ```python
-# Simple arrays
-tags_schema = parse_string_schema("[string]")
-scores_schema = parse_string_schema("[int]")
-
-# Arrays with constraints
-limited_tags = parse_string_schema("[string](max=5)")
-email_list = parse_string_schema("[email](min=1, max=3)")
+schema = string_to_json_schema("name:string, email:email, phone:phone?")
+print(schema)  # Schema with optional fields (marked with ?)
 ```
 
-### 6. 🏔️ Enums and Choices
+### 5. Arrays
 
 ```python
-# Predefined choices
-schema = parse_string_schema("""
-name:string,
-status:enum(active, inactive, pending),
-priority:choice(low, medium, high, urgent),
-category:select(tech, business, personal)
-""")
+# Simple array
+tags_schema = string_to_json_schema("[string]")
+print(tags_schema)  # Array of strings
+
+# Array with constraints
+limited_tags = string_to_json_schema("[string](max=5)")
+print(limited_tags)  # Array with max 5 items
 ```
 
-### 7. 🌌 Union Types
+### 6. Nested Objects
 
 ```python
-# Flexible field types
-schema = parse_string_schema("""
-id:string|uuid,
-value:string|int|float,
-response:string|null
-""")
+schema = string_to_json_schema("user:{name:string, email:email}, active:bool")
+print(schema)  # Schema with nested object
 ```
-
-### 8. 🏗️ Object Arrays
-
-```python
-# Arrays of structured objects
-schema = parse_string_schema("""
-[{
-    name:string(min=1, max=100),
-    email:email,
-    role:enum(admin, user, guest)
-}](min=1, max=50)
-""")
-```
-
-## Next Steps
-
-Now that you understand the basics:
-
-1. **Explore [String Syntax](string-syntax.md)** - Complete syntax reference with all features
-2. **Check [Examples](examples.md)** - Real-world use cases and patterns
-3. **Review [API Reference](api-reference.md)** - Complete API documentation
-4. **See [Advanced Usage](advanced-usage.md)** - Complex patterns and optimization
 
 ## Common Patterns
 
-### User Registration Form
+### User Data
 
 ```python
-registration_schema = parse_string_schema("""
-{
-    username: string(min=3, max=20),
-    email: email,
-    password: string(min=8),
-    age: int(13, 120)?,
-    terms_accepted: bool
-}
-""")
+user_schema = string_to_json_schema("name:string, email:email, active:bool")
+print(user_schema)  # User schema
 ```
 
 ### API Response
 
 ```python
-api_response_schema = parse_string_schema("""
-{
-    success: bool,
-    data: object,
-    message: string?,
-    timestamp: datetime
-}
-""")
+api_schema = string_to_json_schema("success:bool, data:object, message:string?")
+print(api_schema)  # API response schema
 ```
 
-### Product Catalog
+### Product Data
 
 ```python
-product_schema = parse_string_schema("""
-{
-    id: uuid,
-    name: string(min=1, max=200),
-    price: number(min=0),
-    category: enum(electronics, clothing, books, home),
-    tags: [string](max=10)?,
-    in_stock: bool
-}
-""")
+product_schema = string_to_json_schema("id:uuid, name:string, price:number(min=0), in_stock:bool")
+print(product_schema)  # Product schema
 ```
 
-These examples show how Simple Schema makes it easy to define clear, validated data structures that work well with both traditional APIs and LLM-based data extraction.
+## Next Steps
+
+1. **[String Syntax Guide](string-syntax.md)** - Complete syntax reference
+2. **[Examples](examples.md)** - Real-world use cases and patterns
+3. **[API Reference](api-reference.md)** - Complete API documentation
+
+Simple Schema makes it easy to define clear, validated data structures that work well with both traditional APIs and LLM-based data extraction.

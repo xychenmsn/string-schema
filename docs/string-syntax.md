@@ -11,9 +11,10 @@ field_name:type
 ```
 
 Examples:
+
 ```
 name:string
-age:int  
+age:int
 price:number
 active:bool
 ```
@@ -43,28 +44,29 @@ description:text(max=500)
 
 ### Basic Types
 
-| Type | Aliases | Description |
-|------|---------|-------------|
-| `string` | `str`, `text` | Text data |
-| `integer` | `int` | Whole numbers |
-| `number` | `float`, `decimal` | Decimal numbers |
-| `boolean` | `bool` | True/false values |
+| Type      | Aliases            | Description       |
+| --------- | ------------------ | ----------------- |
+| `string`  | `str`, `text`      | Text data         |
+| `integer` | `int`              | Whole numbers     |
+| `number`  | `float`, `decimal` | Decimal numbers   |
+| `boolean` | `bool`             | True/false values |
 
 ### Special Types
 
 Special types provide format hints for better validation and LLM guidance:
 
-| Type | Description | JSON Schema Format |
-|------|-------------|-------------------|
-| `email` | Email addresses | `email` |
-| `url` | Web URLs | `uri` |
-| `uri` | Generic URIs | `uri` |
-| `datetime` | Date and time | `date-time` |
-| `date` | Date only | `date` |
-| `uuid` | UUID identifiers | `uuid` |
-| `phone` | Phone numbers | *(custom)* |
+| Type       | Description      | JSON Schema Format |
+| ---------- | ---------------- | ------------------ |
+| `email`    | Email addresses  | `email`            |
+| `url`      | Web URLs         | `uri`              |
+| `uri`      | Generic URIs     | `uri`              |
+| `datetime` | Date and time    | `date-time`        |
+| `date`     | Date only        | `date`             |
+| `uuid`     | UUID identifiers | `uuid`             |
+| `phone`    | Phone numbers    | _(custom)_         |
 
 Examples:
+
 ```
 email:email
 website:url
@@ -82,7 +84,7 @@ Arrays of basic types:
 
 ```
 [string]        # Array of strings
-[int]           # Array of integers  
+[int]           # Array of integers
 [email]         # Array of email addresses
 [url]           # Array of URLs
 ```
@@ -222,7 +224,7 @@ rating:float(1.0,5.0)           # Float between 1.0-5.0
 # Using min/max keywords
 age:int(min=0,max=120)
 
-# Using positional values  
+# Using positional values
 age:int(0,120)
 
 # Single constraint
@@ -230,73 +232,46 @@ price:number(min=0)
 title:string(max=100)
 ```
 
-## Complex Examples
+## Practical Examples
 
-### E-commerce Product
+### Product Schema
 
 ```
 {
     id:uuid,
-    name:string(min=1,max=200),
+    name:string,
     price:number(min=0),
-    category:enum(electronics,clothing,books,home,sports),
-    description:text(max=1000)?,
-    images:[url](max=5)?,
-    specs:{
-        weight:float?,
-        dimensions:string?,
-        color:string?
-    }?,
-    reviews:[{
-        rating:int(1,5),
-        comment:text(max=500),
-        verified:bool?,
-        date:date?
-    }](max=10)?
+    category:enum(electronics,clothing,books),
+    in_stock:bool,
+    tags:[string]?
 }
 ```
 
-### User Management System
+### User Profile
 
 ```
-[{
-    id:string|uuid,
+{
+    id:uuid,
     profile:{
-        name:string(min=1,max=100),
+        name:string,
         email:email,
         phone:phone?
     },
     account:{
-        status:enum(active,inactive,suspended,pending),
-        role:enum(admin,user,guest),
-        permissions:[string]?,
-        last_login:datetime?
-    },
-    preferences:{
-        theme:choice(light,dark,auto),
-        notifications:bool,
-        language:string?
-    }?
-}](min=1,max=100)
+        status:enum(active,inactive),
+        role:enum(admin,user)
+    }
+}
 ```
 
-### API Response Structure
+### API Response
 
 ```
 {
     success:bool,
-    data:object|array|null,
+    data:object|null,
     message:string?,
-    errors:[{
-        field:string,
-        code:string,
-        message:string
-    }]?,
-    meta:{
-        timestamp:datetime,
-        request_id:uuid,
-        version:string
-    }?
+    timestamp:datetime
 }
 ```
 
@@ -373,29 +348,29 @@ bio:text?
 
 ### Field Definition Patterns
 
-| Pattern | Description | Example |
-|---------|-------------|---------|
-| `name:type` | Basic field | `name:string` |
-| `name:type?` | Optional field | `email:string?` |
-| `name:type(constraints)` | Constrained field | `age:int(0,120)` |
-| `name:enum(values)` | Enum field | `status:enum(active,inactive)` |
-| `name:type1\|type2` | Union field | `id:string\|int` |
+| Pattern                  | Description       | Example                        |
+| ------------------------ | ----------------- | ------------------------------ |
+| `name:type`              | Basic field       | `name:string`                  |
+| `name:type?`             | Optional field    | `email:string?`                |
+| `name:type(constraints)` | Constrained field | `age:int(0,120)`               |
+| `name:enum(values)`      | Enum field        | `status:enum(active,inactive)` |
+| `name:type1\|type2`      | Union field       | `id:string\|int`               |
 
 ### Array Patterns
 
-| Pattern | Description | Example |
-|---------|-------------|---------|
-| `[type]` | Simple array | `[string]` |
-| `[type](constraints)` | Constrained array | `[string](max=5)` |
-| `[{fields}]` | Object array | `[{name:string}]` |
+| Pattern                        | Description        | Example                    |
+| ------------------------------ | ------------------ | -------------------------- |
+| `[type]`                       | Simple array       | `[string]`                 |
+| `[type](constraints)`          | Constrained array  | `[string](max=5)`          |
+| `[{fields}]`                   | Object array       | `[{name:string}]`          |
 | `name:array(type,constraints)` | Alternative syntax | `tags:array(string,max=5)` |
 
 ### Object Patterns
 
-| Pattern | Description | Example |
-|---------|-------------|---------|
-| `{fields}` | Simple object | `{name:string, age:int}` |
-| `name:{fields}` | Nested object | `user:{name:string}` |
-| `name:{fields}?` | Optional nested object | `profile:{bio:string}?` |
+| Pattern          | Description            | Example                  |
+| ---------------- | ---------------------- | ------------------------ |
+| `{fields}`       | Simple object          | `{name:string, age:int}` |
+| `name:{fields}`  | Nested object          | `user:{name:string}`     |
+| `name:{fields}?` | Optional nested object | `profile:{bio:string}?`  |
 
 This syntax provides a powerful yet intuitive way to define schemas that work well with both traditional validation and LLM-based data extraction.
