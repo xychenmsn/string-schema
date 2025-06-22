@@ -1,11 +1,11 @@
-# Getting Started with Simple Schema
+# Getting Started with String Schema
 
-Simple Schema is a Python library that makes it easy to define data schemas using intuitive syntax that works well with Large Language Models (LLMs) for data extraction and validation.
+String Schema is a Python library that makes it easy to define data schemas using intuitive string syntax that works well with Large Language Models (LLMs) for data extraction and validation.
 
 ## Installation
 
 ```bash
-pip install simple-schema
+pip install string-schema
 ```
 
 Optional dependencies:
@@ -19,7 +19,7 @@ pip install pydantic  # For Pydantic model generation
 Let's start with a simple example:
 
 ```python
-from simple_schema import string_to_json_schema
+from string_schema import string_to_json_schema
 
 # Define schema using intuitive string syntax
 schema = string_to_json_schema("name:string, email:email, age:int?")
@@ -39,7 +39,7 @@ print(schema)
 ## Create Pydantic Models
 
 ```python
-from simple_schema import string_to_model
+from string_schema import string_to_model
 
 # Create Pydantic model from string syntax
 UserModel = string_to_model("name:string, email:email, active:bool")
@@ -52,7 +52,7 @@ print(user.model_dump_json())  # {"name": "Alice", "email": "alice@example.com",
 ## Data Validation
 
 ```python
-from simple_schema import validate_to_dict, validate_to_model
+from string_schema import validate_to_dict, validate_to_model
 
 # Example raw data
 raw_data = {
@@ -110,7 +110,7 @@ print(id_schema)  # Union type schema
 ## Code Generation
 
 ```python
-from simple_schema import string_to_model_code
+from string_schema import string_to_model_code
 
 # Generate Pydantic model code as string
 code = string_to_model_code("User", "name:string, email:email, active:bool")
@@ -218,4 +218,4 @@ print(product_schema)  # Product schema
 2. **[Examples](examples.md)** - Real-world use cases and patterns
 3. **[API Reference](api-reference.md)** - Complete API documentation
 
-Simple Schema makes it easy to define clear, validated data structures that work well with both traditional APIs and LLM-based data extraction.
+String Schema makes it easy to define clear, validated data structures that work well with both traditional APIs and LLM-based data extraction.

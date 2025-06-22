@@ -1,4 +1,4 @@
-# Simple Schema
+# String Schema
 
 A simple, LLM-friendly schema definition library for Python that converts intuitive string syntax into structured data schemas.
 
@@ -7,13 +7,13 @@ A simple, LLM-friendly schema definition library for Python that converts intuit
 ### Installation
 
 ```bash
-pip install simple-schema
+pip install string-schema
 ```
 
 ### 30-Second Example
 
 ```python
-from simple_schema import string_to_json_schema
+from string_schema import string_to_json_schema
 
 # Define a schema with simple, readable syntax
 schema = string_to_json_schema("name:string, email:email, age:int?")
@@ -34,7 +34,7 @@ print(schema)
 ### Create Pydantic Models Directly
 
 ```python
-from simple_schema import string_to_model
+from string_schema import string_to_model
 
 # Create Pydantic model from string syntax
 UserModel = string_to_model("name:string, email:email, age:int?")
@@ -44,9 +44,9 @@ user = UserModel(name="Alice", email="alice@example.com")
 print(user.model_dump_json())  # {"name": "Alice", "email": "alice@example.com"}
 ```
 
-## 🎯 What Simple Schema Does
+## 🎯 What String Schema Does
 
-Simple Schema takes human-readable text descriptions and converts them into structured schemas for data validation, extraction, and API documentation. Perfect for LLM data extraction, API development, and configuration validation.
+String Schema takes human-readable text descriptions and converts them into structured schemas for data validation, extraction, and API documentation. Perfect for LLM data extraction, API development, and configuration validation.
 
 **Input:** Human-readable string syntax
 **Output:** JSON Schema, Pydantic models, or OpenAPI specifications
@@ -109,7 +109,7 @@ Simple Schema takes human-readable text descriptions and converts them into stru
 ### ✅ Validate Data
 
 ```python
-from simple_schema import validate_to_dict, validate_to_model
+from string_schema import validate_to_dict, validate_to_model
 
 # Example raw data (from API, user input, etc.)
 raw_data = {
@@ -132,7 +132,7 @@ print(user_model.age)   # 25 - Converted to int
 ### 🎨 Function Decorators
 
 ```python
-from simple_schema import returns_dict, returns_model
+from string_schema import returns_dict, returns_model
 import uuid
 
 # Auto-validate function returns to dicts
@@ -162,7 +162,7 @@ print(user_model.name)  # "Bob" - Full type safety
 ### 🌐 FastAPI Integration
 
 ```python
-from simple_schema import string_to_model, returns_dict
+from string_schema import string_to_model, returns_dict
 
 # Create models for FastAPI
 UserRequest = string_to_model("name:string, email:email")
@@ -182,7 +182,7 @@ def create_user_endpoint(user: UserRequest):
 ### 🌱 Simple Example - Basic User Data
 
 ```python
-from simple_schema import string_to_json_schema
+from string_schema import string_to_json_schema
 
 # Define schema using intuitive string syntax
 schema = string_to_json_schema("""
@@ -234,7 +234,7 @@ print(schema)  # Full JSON Schema ready for validation
 ### 🐍 Pydantic Models (Python Classes)
 
 ```python
-from simple_schema import string_to_model
+from string_schema import string_to_model
 
 # Direct conversion: String syntax → Pydantic model
 UserModel = string_to_model("name:string, email:email, active:bool")
@@ -247,7 +247,7 @@ print(user.model_dump_json())  # {"name": "John Doe", "email": "john@example.com
 ### 🔧 Code Generation (For Templates & Tools)
 
 ```python
-from simple_schema import string_to_model_code
+from string_schema import string_to_model_code
 
 # Generate Pydantic model code as a string
 code = string_to_model_code("User", "name:string, email:email, active:bool")
@@ -270,7 +270,7 @@ with open('models.py', 'w') as f:
 ### 🌐 OpenAPI Schemas (API Documentation)
 
 ```python
-from simple_schema import string_to_openapi
+from string_schema import string_to_openapi
 
 # Direct conversion: String syntax → OpenAPI schema
 openapi_schema = string_to_openapi("name:string, email:email")
@@ -287,14 +287,14 @@ print(openapi_schema)
 
 ## 🔄 Reverse Conversions (Universal Schema Converter)
 
-Simple Schema provides complete bidirectional conversion between all schema formats!
+String Schema provides complete bidirectional conversion between all schema formats!
 
 > **⚠️ Information Loss Notice**: Reverse conversions (from JSON Schema/OpenAPI/Pydantic back to string syntax) may lose some information due to format differences. However, the resulting schemas are designed to cover the most common use cases and maintain functional equivalence for typical validation scenarios.
 
 ### 🔍 Schema Introspection
 
 ```python
-from simple_schema import model_to_string, string_to_model
+from string_schema import model_to_string, string_to_model
 
 # Create a model first
 UserModel = string_to_model("name:string, email:email, active:bool")
@@ -308,9 +308,9 @@ print(f"Model schema: {schema_string}")
 ### 📦 Migration & Import
 
 ```python
-from simple_schema import json_schema_to_string
+from string_schema import json_schema_to_string
 
-# Example: Convert existing JSON Schema to Simple Schema syntax
+# Example: Convert existing JSON Schema to String Schema syntax
 json_schema = {
     "type": "object",
     "properties": {
@@ -329,7 +329,7 @@ print(f"Converted: {simple_syntax}")
 ### 🔧 Schema Comparison & Analysis
 
 ```python
-from simple_schema import string_to_model, model_to_string
+from string_schema import string_to_model, model_to_string
 
 # Create two versions of a model
 UserV1 = string_to_model("name:string, email:email")
@@ -371,7 +371,7 @@ print(f"V2: {v2_str}")  # "name:string, email:email, active:bool"
 ## ✅ Validation
 
 ```python
-from simple_schema import validate_string_syntax
+from string_schema import validate_string_syntax
 
 # Validate your schema syntax
 result = validate_string_syntax("name:string, email:email, age:int?")
@@ -391,7 +391,7 @@ print(f"Errors: {bad_result['errors']}")  # ['Unknown type: invalid_type']
 ### 🤖 LLM Data Extraction
 
 ```python
-from simple_schema import string_to_json_schema
+from string_schema import string_to_json_schema
 
 # Define what data to extract
 schema = string_to_json_schema("company:string, employees:[{name:string, email:email}], founded:int?")
@@ -401,7 +401,7 @@ schema = string_to_json_schema("company:string, employees:[{name:string, email:e
 ### 🔧 FastAPI Development
 
 ```python
-from simple_schema import string_to_model
+from string_schema import string_to_model
 
 # Create model for FastAPI
 UserModel = string_to_model("name:string, email:email")
@@ -415,7 +415,7 @@ async def create_user(user: UserModel):
 ### 🏗️ Code Generation & Templates
 
 ```python
-from simple_schema import string_to_model_code
+from string_schema import string_to_model_code
 
 # Generate model code
 code = string_to_model_code("User", "name:string, email:email")
@@ -430,7 +430,7 @@ with open('user_model.py', 'w') as f:
 ### 📋 Configuration Validation
 
 ```python
-from simple_schema import string_to_json_schema
+from string_schema import string_to_json_schema
 
 # Validate app configuration
 config_schema = string_to_json_schema("database:{host:string, port:int}, debug:bool")
@@ -450,8 +450,8 @@ Ready-to-use schema examples are available in the `examples/` directory:
 
 ```python
 # Import example schemas if needed
-from simple_schema.examples.presets import user_schema, product_schema
-from simple_schema.examples.recipes import create_ecommerce_product_schema
+from string_schema.examples.presets import user_schema, product_schema
+from string_schema.examples.recipes import create_ecommerce_product_schema
 
 # Or better yet, use string syntax directly:
 user_schema = string_to_json_schema("name:string, email:email, age:int?")
@@ -487,4 +487,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Simple Schema** - Making data validation simple, intuitive, and LLM-friendly! 🚀
+**String Schema** - Making data validation simple, intuitive, and LLM-friendly! 🚀

@@ -1,14 +1,14 @@
 # Frequently Asked Questions
 
-Common questions about Simple Schema and their answers.
+Common questions about String Schema and their answers.
 
 ## 🤔 General Questions
 
-### What is Simple Schema?
+### What is String Schema?
 
-Simple Schema is a Python library designed to make data schema definition intuitive and LLM-friendly. It allows you to define data structures using human-readable syntax that works well with Large Language Models for data extraction and validation.
+String Schema is a Python library designed to make data schema definition intuitive and LLM-friendly. It allows you to define data structures using human-readable syntax that works well with Large Language Models for data extraction and validation.
 
-### Why use Simple Schema instead of JSON Schema directly?
+### Why use String Schema instead of JSON Schema directly?
 
 - **Simpler syntax**: `name:string, age:int` vs verbose JSON Schema
 - **LLM-optimized**: Designed specifically for AI data extraction
@@ -16,9 +16,10 @@ Simple Schema is a Python library designed to make data schema definition intuit
 - **Built-in validation**: Comprehensive error checking and suggestions
 - **Special types**: Email, URL, datetime with automatic format hints
 
-### Is Simple Schema production-ready?
+### Is String Schema production-ready?
 
-Yes! Simple Schema has:
+Yes! String Schema has:
+
 - ✅ 66 passing tests covering all functionality
 - ✅ Clean, modular architecture
 - ✅ Comprehensive documentation
@@ -27,15 +28,17 @@ Yes! Simple Schema has:
 
 ## 🔧 Technical Questions
 
-### Do I need Pydantic to use Simple Schema?
+### Do I need Pydantic to use String Schema?
 
 No! Pydantic is optional. Simple Schema works without any external dependencies for:
+
 - String schema parsing
 - JSON Schema generation
 - OpenAPI schema generation
 - Built-in validation
 
 Pydantic is only required if you want to generate Pydantic models:
+
 ```bash
 pip install pydantic  # Only if you need Pydantic models
 ```
@@ -43,28 +46,30 @@ pip install pydantic  # Only if you need Pydantic models
 ### What's the difference between the string syntax and SimpleField objects?
 
 **String syntax** (recommended for LLMs):
+
 ```python
 schema = parse_string_schema("name:string, age:int, email:email")
 ```
 
 **SimpleField objects** (programmatic):
+
 ```python
 fields = {
     'name': SimpleField('string', 'Name'),
     'age': SimpleField('integer', 'Age'),
     'email': SimpleField('string', 'Email', format_hint='email')
 }
-schema = simple_schema(fields)
+schema = string_schema(fields)
 ```
 
 Both produce the same result. String syntax is more concise and LLM-friendly.
 
-### Can I use Simple Schema with existing JSON Schema validators?
+### Can I use String Schema with existing JSON Schema validators?
 
-Yes! Simple Schema generates standard JSON Schema:
+Yes! String Schema generates standard JSON Schema:
 
 ```python
-from simple_schema.integrations.json_schema import to_json_schema
+from string_schema.integrations.json_schema import to_json_schema
 import jsonschema
 
 # Generate JSON Schema
@@ -260,6 +265,7 @@ async def create_user(user: UserModel):
 ### Is Simple Schema fast enough for production?
 
 Yes! Simple Schema is designed for performance:
+
 - Efficient parsing algorithms
 - Built-in caching support
 - Minimal dependencies
@@ -278,7 +284,7 @@ def get_cached_schema(schema_str: str):
 ### How do I optimize large schemas?
 
 ```python
-from simple_schema.parsing.optimizer import optimize_string_schema, suggest_improvements
+from string_schema.parsing.optimizer import optimize_string_schema, suggest_improvements
 
 # Optimize schema
 optimized = optimize_string_schema(large_schema)
@@ -344,7 +350,7 @@ print("Features:", result['features_used'])
 - **tests/**: Comprehensive test examples
 - **examples/demo.py**: Working demonstration script
 
-### How do I contribute to Simple Schema?
+### How do I contribute to String Schema?
 
 1. Fork the repository
 2. Create a feature branch
@@ -354,9 +360,10 @@ print("Features:", result['features_used'])
 
 The codebase is well-organized and documented for easy contribution.
 
-### What's the roadmap for Simple Schema?
+### What's the roadmap for String Schema?
 
-Simple Schema is feature-complete for most use cases. Future enhancements might include:
+String Schema is feature-complete for most use cases. Future enhancements might include:
+
 - Additional special types
 - More integration options
 - Performance optimizations

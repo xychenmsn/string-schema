@@ -1,7 +1,7 @@
 """
-Simple Schema - A simple, LLM-friendly schema definition library
+String Schema - A simple, LLM-friendly schema definition library
 
-This library provides an intuitive way to define data schemas using simple syntax
+This library provides an intuitive way to define data schemas using simple string syntax
 that works well with Large Language Models for data extraction and validation.
 
 Key Features:
@@ -64,8 +64,8 @@ from .integrations.json_schema import (
 # Note: Built-in presets moved to examples/ directory
 # Import them from simple_schema.examples.presets if needed
 
-__version__ = "1.0.0"
-__author__ = "Simple Schema Team"
+__version__ = "0.1.0"
+__author__ = "importal"
 
 __all__ = [
     # 🎯 Forward conversion functions (source → target)

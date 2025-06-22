@@ -232,18 +232,18 @@ product_schema = get_cached_schema("name:string, price:number(min=0), category:e
 ### Batch Validation
 
 ```python
-from simple_schema.parsing import validate_string_schema
-from simple_schema.core.validators import validate_schema
+from string_schema.parsing import validate_string_schema
+from string_schema.core.validators import validate_schema
 
 def validate_multiple_schemas(schema_strings: list) -> dict:
     """Validate multiple schemas efficiently"""
     results = {}
-    
+
     for i, schema_str in enumerate(schema_strings):
         try:
             schema = parse_string_schema(schema_str)
             validation = validate_string_schema(schema_str)
-            
+
             results[f"schema_{i}"] = {
                 'valid': validation['valid'],
                 'features': validation['features_used'],
@@ -255,7 +255,7 @@ def validate_multiple_schemas(schema_strings: list) -> dict:
                 'valid': False,
                 'error': str(e)
             }
-    
+
     return results
 ```
 
@@ -264,29 +264,29 @@ def validate_multiple_schemas(schema_strings: list) -> dict:
 ### Custom Validation Rules
 
 ```python
-from simple_schema.parsing.optimizer import suggest_improvements
+from string_schema.parsing.optimizer import suggest_improvements
 
 def enhanced_schema_validation(schema_str: str) -> dict:
     """Enhanced validation with suggestions"""
     validation = validate_string_schema(schema_str)
     suggestions = suggest_improvements(schema_str)
-    
+
     # Add custom business logic validation
     custom_warnings = []
-    
+
     # Check for common anti-patterns
     if 'password' in schema_str.lower() and 'string' in schema_str:
         if 'min=' not in schema_str:
             custom_warnings.append("Password fields should have minimum length constraints")
-    
+
     if 'email' in schema_str and '@' in schema_str:
         custom_warnings.append("Use 'email' type instead of string for email fields")
-    
+
     # Check for missing optional markers
     field_count = len(validation.get('parsed_fields', {}))
     if field_count > 5 and '?' not in schema_str:
         custom_warnings.append("Consider marking some fields as optional for flexibility")
-    
+
     return {
         **validation,
         'suggestions': suggestions,
@@ -302,24 +302,24 @@ def migrate_schema_v1_to_v2(old_schema_str: str) -> str:
     # Example migration: old format used 'str' instead of 'string'
     migrated = old_schema_str.replace(':str', ':string')
     migrated = migrated.replace(':int', ':integer')
-    
+
     # Add new required fields
     if 'created_at' not in migrated:
         migrated = migrated.rstrip('}') + ', created_at:datetime}'
-    
+
     return migrated
 
 def validate_schema_compatibility(old_schema: str, new_schema: str) -> dict:
     """Check if new schema is backward compatible"""
     old_validation = validate_string_schema(old_schema)
     new_validation = validate_string_schema(new_schema)
-    
+
     old_fields = set(old_validation.get('parsed_fields', {}).keys())
     new_fields = set(new_validation.get('parsed_fields', {}).keys())
-    
+
     removed_fields = old_fields - new_fields
     added_fields = new_fields - old_fields
-    
+
     return {
         'compatible': len(removed_fields) == 0,
         'removed_fields': list(removed_fields),
@@ -343,7 +343,7 @@ def generate_api_docs(endpoints: dict) -> dict:
     """Generate OpenAPI documentation from Simple Schema definitions"""
     paths = {}
     components = {}
-    
+
     for endpoint_path, config in endpoints.items():
         # Create path item
         path_item = create_openapi_path_item(
@@ -355,11 +355,11 @@ def generate_api_docs(endpoints: dict) -> dict:
             parameters=config.get('parameters', [])
         )
         paths[endpoint_path] = path_item
-        
+
         # Add to components if reusable
         if config.get('component_name'):
             components[config['component_name']] = config['response_schema']
-    
+
     return generate_openapi_spec(
         title="API Documentation",
         version="1.0.0",
@@ -375,17 +375,17 @@ def generate_api_docs(endpoints: dict) -> dict:
 def generate_sql_ddl(schema_str: str, table_name: str) -> str:
     """Generate SQL DDL from Simple Schema (basic example)"""
     schema = parse_string_schema(schema_str)
-    
+
     if schema['type'] != 'object':
         raise ValueError("Only object schemas can be converted to SQL tables")
-    
+
     columns = []
-    
+
     for field_name, field_def in schema['properties'].items():
         sql_type = _map_to_sql_type(field_def)
         nullable = "NULL" if field_name not in schema.get('required', []) else "NOT NULL"
         columns.append(f"    {field_name} {sql_type} {nullable}")
-    
+
     return f"""CREATE TABLE {table_name} (
 {',\\n'.join(columns)}
 );"""
@@ -398,14 +398,14 @@ def _map_to_sql_type(field_def: dict) -> str:
         'number': 'DECIMAL(10,2)',
         'boolean': 'BOOLEAN'
     }
-    
+
     field_type = field_def.get('type', 'string')
-    
+
     # Handle string length constraints
     if field_type == 'string':
         max_length = field_def.get('maxLength', 255)
         return f'VARCHAR({max_length})'
-    
+
     return type_mapping.get(field_type, 'TEXT')
 ```
 
@@ -426,14 +426,14 @@ from simple_schema import parse_string_schema
 def test_user_schema_with_generated_data(name, age, email):
     """Test schema with property-based testing"""
     schema = parse_string_schema("name:string(min=1,max=100), age:int(0,120), email:email")
-    
+
     # Test that schema can handle generated data
     test_data = {
         'name': name,
         'age': age,
         'email': email
     }
-    
+
     # Validate against schema (would need JSON Schema validator)
     assert len(test_data['name']) >= 1
     assert len(test_data['name']) <= 100

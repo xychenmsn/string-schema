@@ -1,18 +1,20 @@
 # Troubleshooting
 
-Common issues and solutions when using Simple Schema.
+Common issues and solutions when using String Schema.
 
 ## 🐛 Common Issues
 
 ### Array Parsing Issues
 
 **Problem**: Arrays not parsing correctly
+
 ```python
 # This might fail
 schema = parse_string_schema("[string")  # Missing closing bracket
 ```
 
 **Solution**: Ensure proper bracket syntax
+
 ```python
 # Correct syntax
 schema = parse_string_schema("[string]")           # Simple array
@@ -23,6 +25,7 @@ schema = parse_string_schema("[{name:string}]")    # Object array
 ### Constraint Syntax Errors
 
 **Problem**: Constraints not being recognized
+
 ```python
 # These might not work as expected
 schema = parse_string_schema("name:string(1,100)")     # Missing constraint names
@@ -30,6 +33,7 @@ schema = parse_string_schema("age:int(min=0 max=120)") # Missing comma
 ```
 
 **Solution**: Use proper constraint syntax
+
 ```python
 # Correct constraint syntax
 schema = parse_string_schema("name:string(min=1,max=100)")  # Named constraints
@@ -40,12 +44,14 @@ schema = parse_string_schema("price:number(min=0)")        # Single constraint
 ### Special Type Format Issues
 
 **Problem**: Special types not getting proper format hints
+
 ```python
 # This creates a string field without email format
 schema = parse_string_schema("contact:string")
 ```
 
 **Solution**: Use special type names
+
 ```python
 # This creates a string field with email format
 schema = parse_string_schema("contact:email")
@@ -56,6 +62,7 @@ schema = parse_string_schema("created:datetime")
 ### Enum Syntax Problems
 
 **Problem**: Enum values not being recognized
+
 ```python
 # These might fail
 schema = parse_string_schema("status:enum active,inactive")  # Missing parentheses
@@ -63,6 +70,7 @@ schema = parse_string_schema("status:enum(active inactive)") # Missing commas
 ```
 
 **Solution**: Use proper enum syntax
+
 ```python
 # Correct enum syntax
 schema = parse_string_schema("status:enum(active,inactive,pending)")
@@ -73,12 +81,14 @@ schema = parse_string_schema("category:select(tech,business,personal)")
 ### Union Type Issues
 
 **Problem**: Union types not working
+
 ```python
 # This might not create a proper union
 schema = parse_string_schema("id:string or uuid")  # Wrong syntax
 ```
 
 **Solution**: Use pipe (|) for unions
+
 ```python
 # Correct union syntax
 schema = parse_string_schema("id:string|uuid")
@@ -91,38 +101,42 @@ schema = parse_string_schema("response:string|null")
 ### Pydantic Import Errors
 
 **Problem**: ImportError when using Pydantic features
+
 ```
 ImportError: Pydantic is required for create_pydantic_model
 ```
 
 **Solution**: Install Pydantic or use alternative methods
+
 ```bash
 # Install Pydantic
 pip install pydantic
 
 # Or use JSON Schema instead
-from simple_schema.integrations.json_schema import to_json_schema
+from string_schema.integrations.json_schema import to_json_schema
 schema = to_json_schema(fields)
 ```
 
 ### Module Not Found Errors
 
-**Problem**: Cannot import Simple Schema modules
+**Problem**: Cannot import String Schema modules
+
 ```
-ModuleNotFoundError: No module named 'simple_schema'
+ModuleNotFoundError: No module named 'string_schema'
 ```
 
 **Solution**: Check installation and Python path
+
 ```bash
 # Reinstall the package
-pip uninstall simple-schema
-pip install simple-schema
+pip uninstall string-schema
+pip install string-schema
 
 # For development installation
 pip install -e .
 
 # Check if installed
-pip list | grep simple-schema
+pip list | grep string-schema
 ```
 
 ## 🧪 Validation and Testing Issues
@@ -130,12 +144,14 @@ pip list | grep simple-schema
 ### Schema Validation Failures
 
 **Problem**: Schema validation returns false positives
+
 ```python
 result = validate_string_schema("name:string, age:int")
 # result['valid'] might be False unexpectedly
 ```
 
 **Solution**: Check validation details
+
 ```python
 from simple_schema.parsing import validate_string_schema
 
@@ -144,7 +160,7 @@ result = validate_string_schema("name:string, age:int")
 if not result['valid']:
     print("Errors:", result['errors'])
     print("Warnings:", result['warnings'])
-    
+
 # Check what features were detected
 print("Features used:", result['features_used'])
 print("Parsed fields:", result['parsed_fields'])
@@ -153,6 +169,7 @@ print("Parsed fields:", result['parsed_fields'])
 ### Complex Schema Parsing
 
 **Problem**: Complex nested schemas fail to parse
+
 ```python
 # This might be too complex and fail
 complex_schema = """
@@ -161,6 +178,7 @@ complex_schema = """
 ```
 
 **Solution**: Break down complex schemas or add whitespace
+
 ```python
 # Add proper formatting and spacing
 complex_schema = """
@@ -181,7 +199,7 @@ complex_schema = """
 """
 
 # Or build incrementally
-from simple_schema import SimpleField, simple_schema
+from string_schema import SimpleField, string_schema
 
 phone_fields = {
     'type': SimpleField('string', choices=['home', 'work']),
@@ -201,14 +219,16 @@ contact_fields = {
 ### JSON Schema Compatibility
 
 **Problem**: Generated JSON Schema not compatible with validators
+
 ```python
-schema = simple_schema(fields)
+schema = string_schema(fields)
 # Schema might not validate with external JSON Schema validators
 ```
 
 **Solution**: Use JSON Schema integration module
+
 ```python
-from simple_schema.integrations.json_schema import (
+from string_schema.integrations.json_schema import (
     to_json_schema,
     validate_json_schema_compliance
 )
@@ -225,6 +245,7 @@ if not compliance['valid']:
 ### OpenAPI Integration Problems
 
 **Problem**: OpenAPI schema generation fails
+
 ```python
 # Might fail with complex union types
 fields_with_complex_unions = {
@@ -233,6 +254,7 @@ fields_with_complex_unions = {
 ```
 
 **Solution**: Simplify unions or use OpenAPI-specific methods
+
 ```python
 from simple_schema.integrations.openapi import (
     to_openapi_schema,
@@ -253,15 +275,17 @@ openapi_schema = to_openapi_schema(fields)
 ### Slow Schema Parsing
 
 **Problem**: Large schemas take too long to parse
+
 ```python
 # This might be slow for very large schemas
 huge_schema = "field1:string, field2:string, ..." * 1000
 ```
 
 **Solution**: Use caching and optimization
+
 ```python
 from functools import lru_cache
-from simple_schema.parsing.optimizer import optimize_string_schema
+from string_schema.parsing.optimizer import optimize_string_schema
 
 @lru_cache(maxsize=128)
 def cached_parse(schema_str: str):
@@ -275,12 +299,14 @@ schema = cached_parse(optimized)
 ### Memory Usage with Large Schemas
 
 **Problem**: High memory usage with complex schemas
+
 ```python
 # Creating many large schemas
 schemas = [parse_string_schema(large_schema) for _ in range(1000)]
 ```
 
 **Solution**: Use generators and cleanup
+
 ```python
 def schema_generator(schema_strings):
     for schema_str in schema_strings:

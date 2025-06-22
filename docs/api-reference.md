@@ -1,6 +1,6 @@
 # API Reference
 
-Complete API documentation for Simple Schema.
+Complete API documentation for String Schema.
 
 ## Main Functions
 
@@ -15,7 +15,7 @@ Convert string syntax to JSON Schema.
 **Example:**
 
 ```python
-from simple_schema import string_to_json_schema
+from string_schema import string_to_json_schema
 
 schema = string_to_json_schema("name:string, email:email, age:int?")
 print(schema)  # Complete JSON Schema
@@ -32,7 +32,7 @@ Convert string syntax to Pydantic model.
 **Example:**
 
 ```python
-from simple_schema import string_to_model
+from string_schema import string_to_model
 
 UserModel = string_to_model("name:string, email:email, active:bool")
 user = UserModel(name="Alice", email="alice@example.com", active=True)
@@ -49,7 +49,7 @@ Generate Pydantic model code as string.
 **Example:**
 
 ```python
-from simple_schema import string_to_model_code
+from string_schema import string_to_model_code
 
 code = string_to_model_code("User", "name:string, email:email")
 print(code)  # Complete Pydantic model class code
@@ -57,10 +57,10 @@ print(code)  # Complete Pydantic model class code
 
 ### Schema Builders
 
-#### simple_schema()
+#### string_schema()
 
 ```python
-def simple_schema(fields: Dict[str, Union[str, SimpleField]]) -> Dict[str, Any]
+def string_schema(fields: Dict[str, Union[str, SimpleField]]) -> Dict[str, Any]
 ```
 
 Generate JSON Schema from field definitions.
@@ -72,7 +72,7 @@ fields = {
     'name': SimpleField('string', 'Full name'),
     'age': SimpleField('integer', 'Age', min_val=0)
 }
-schema = simple_schema(fields)
+schema = string_schema(fields)
 ```
 
 #### list_of_objects_schema()
@@ -115,7 +115,7 @@ Convert string syntax to OpenAPI schema.
 **Example:**
 
 ```python
-from simple_schema import string_to_openapi
+from string_schema import string_to_openapi
 
 openapi_schema = string_to_openapi("name:string, email:email")
 print(openapi_schema)  # OpenAPI-compatible schema
@@ -134,7 +134,7 @@ Validate data against schema and return clean dictionary.
 **Example:**
 
 ```python
-from simple_schema import validate_to_dict
+from string_schema import validate_to_dict
 
 raw_data = {"name": "John", "email": "john@example.com", "age": "25"}
 clean_data = validate_to_dict(raw_data, "name:string, email:email, age:int?")
@@ -152,7 +152,7 @@ Validate data against schema and return Pydantic model instance.
 **Example:**
 
 ```python
-from simple_schema import validate_to_model
+from string_schema import validate_to_model
 
 raw_data = {"name": "John", "email": "john@example.com", "active": True}
 user_model = validate_to_model(raw_data, "name:string, email:email, active:bool")
@@ -170,7 +170,7 @@ Validate string schema syntax and return detailed feedback.
 **Example:**
 
 ```python
-from simple_schema import validate_string_syntax
+from string_schema import validate_string_syntax
 
 result = validate_string_syntax("name:string, email:email, age:int?")
 print(f"Valid: {result['valid']}")  # True
@@ -190,7 +190,7 @@ Convert Pydantic model back to string syntax.
 **Example:**
 
 ```python
-from simple_schema import string_to_model, model_to_string
+from string_schema import string_to_model, model_to_string
 
 UserModel = string_to_model("name:string, email:email, active:bool")
 schema_string = model_to_string(UserModel)
@@ -208,7 +208,7 @@ Convert JSON Schema to string syntax.
 **Example:**
 
 ```python
-from simple_schema import json_schema_to_string
+from string_schema import json_schema_to_string
 
 json_schema = {
     "type": "object",
@@ -235,7 +235,7 @@ Decorator that validates function return values to clean dictionaries.
 **Example:**
 
 ```python
-from simple_schema import returns_dict
+from string_schema import returns_dict
 
 @returns_dict("id:string, name:string, active:bool")
 def create_user(name):
@@ -255,7 +255,7 @@ Decorator that validates function return values to Pydantic models.
 **Example:**
 
 ```python
-from simple_schema import returns_model
+from string_schema import returns_model
 
 @returns_model("name:string, email:string")
 def process_user(raw_input):
@@ -289,7 +289,7 @@ def process_user(raw_input):
 ### Examples
 
 ```python
-# Simple schema
+# String schema
 "name:string, email:email, age:int?"
 
 # With constraints
@@ -304,7 +304,7 @@ def process_user(raw_input):
 
 ## Type Hints
 
-Simple Schema is fully typed:
+String Schema is fully typed:
 
 ```python
 from typing import Dict, List, Any, Optional, Union, Type
@@ -330,4 +330,4 @@ from pydantic import BaseModel
 - `{}` → Objects
 - `enum()` → Enumerated values
 
-This covers the main Simple Schema API. For more examples, see the [Examples](examples.md) documentation.
+This covers the main String Schema API. For more examples, see the [Examples](examples.md) documentation.

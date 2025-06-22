@@ -1,6 +1,6 @@
 # String Syntax Guide
 
-Simple Schema's string syntax provides an intuitive way to define schemas using human-readable text. This syntax is particularly effective for LLM-based data extraction.
+String Schema's string syntax provides an intuitive way to define schemas using human-readable text. This syntax is particularly effective for LLM-based data extraction.
 
 ## Basic Syntax
 

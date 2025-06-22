@@ -8,17 +8,17 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name="simple-schema",
-    version="1.0.0",
-    author="Simple Schema Team",
-    author_email="team@simple-schema.dev",
-    description="A simple, LLM-friendly schema definition library",
+    name="string-schema",
+    version="0.1.0",
+    author="importal",
+    author_email="xychen@msn.com",
+    description="A simple, LLM-friendly schema definition library for converting string syntax to structured schemas",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/simple-schema/simple-schema",
+    url="https://github.com/xychenmsn/string-schema",
     packages=find_packages(),
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
@@ -28,6 +28,7 @@ setup(
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: Text Processing :: Markup",
         "Topic :: Utilities",
@@ -52,15 +53,10 @@ setup(
             "myst-parser>=0.18.0",
         ],
     },
-    entry_points={
-        "console_scripts": [
-            "simple-schema=simple_schema.cli:main",
-        ],
-    },
     keywords="schema validation json llm ai data-extraction",
     project_urls={
-        "Bug Reports": "https://github.com/simple-schema/simple-schema/issues",
-        "Source": "https://github.com/simple-schema/simple-schema",
-        "Documentation": "https://simple-schema.readthedocs.io/",
+        "Bug Reports": "https://github.com/xychenmsn/string-schema/issues",
+        "Source": "https://github.com/xychenmsn/string-schema",
+        "Documentation": "https://github.com/xychenmsn/string-schema#readme",
     },
 )

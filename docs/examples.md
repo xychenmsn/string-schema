@@ -1,13 +1,13 @@
 # Examples
 
-Practical examples and use cases for Simple Schema.
+Practical examples and use cases for String Schema.
 
 ## Basic Examples
 
 ### Simple User Schema
 
 ```python
-from simple_schema import string_to_json_schema
+from string_schema import string_to_json_schema
 
 # Define user schema using string syntax
 user_schema = string_to_json_schema("name:string, email:email, age:int?")
@@ -26,7 +26,7 @@ print(user_schema)
 ### Create Pydantic Models
 
 ```python
-from simple_schema import string_to_model
+from string_schema import string_to_model
 
 # Create Pydantic model from string syntax
 UserModel = string_to_model("name:string, email:email, active:bool")
@@ -41,7 +41,7 @@ print(user.model_dump_json())  # {"name": "Alice", "email": "alice@example.com",
 ### Simple Arrays
 
 ```python
-from simple_schema import string_to_json_schema
+from string_schema import string_to_json_schema
 
 # Array of strings
 tags_schema = string_to_json_schema("[string]")
@@ -172,7 +172,7 @@ print(blog_schema)  # Blog post schema
 ### Code Generation
 
 ```python
-from simple_schema import string_to_model_code
+from string_schema import string_to_model_code
 
 # Generate Pydantic model code
 code = string_to_model_code("User", "name:string, email:email, active:bool")
@@ -187,7 +187,7 @@ with open('user_model.py', 'w') as f:
 ### OpenAPI Schema
 
 ```python
-from simple_schema import string_to_openapi
+from string_schema import string_to_openapi
 
 # Generate OpenAPI schema
 openapi_schema = string_to_openapi("name:string, email:email, active:bool")
@@ -197,7 +197,7 @@ print(openapi_schema)  # OpenAPI-compatible schema
 ### Reverse Conversion
 
 ```python
-from simple_schema import model_to_string, string_to_model
+from string_schema import model_to_string, string_to_model
 
 # Create model and convert back to string
 UserModel = string_to_model("name:string, email:email, active:bool")
@@ -210,7 +210,7 @@ print(schema_string)  # "name:string, email:email, active:bool"
 ### Validate Raw Data
 
 ```python
-from simple_schema import validate_to_dict, validate_to_model
+from string_schema import validate_to_dict, validate_to_model
 
 # Example raw data
 raw_data = {
@@ -232,7 +232,7 @@ print(user_model.name)  # "John Doe" - Full type safety
 ### Schema Syntax Validation
 
 ```python
-from simple_schema import validate_string_syntax
+from string_schema import validate_string_syntax
 
 # Validate schema syntax
 result = validate_string_syntax("name:string, email:email, age:int?")
@@ -248,7 +248,7 @@ print(f"Errors: {bad_result['errors']}")  # ['Unknown type: invalid_type']
 ## Function Decorators
 
 ```python
-from simple_schema import returns_dict, returns_model
+from string_schema import returns_dict, returns_model
 import uuid
 
 # Auto-validate function returns to dicts
@@ -268,4 +268,4 @@ def process_user(raw_input):
     # Note: Returns typed Pydantic model, 'junk' field filtered out
 ```
 
-These examples demonstrate Simple Schema's flexibility for defining data structures that work well with both traditional validation and LLM-based data extraction.
+These examples demonstrate String Schema's flexibility for defining data structures that work well with both traditional validation and LLM-based data extraction.

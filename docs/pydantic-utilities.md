@@ -1,11 +1,11 @@
 # 🎯 Pydantic Utility Enhancement
 
-Transform your Simple Schema implementation into a comprehensive **Pydantic utility** that eliminates verbose model definitions and enables string-based schema usage throughout the Python ecosystem.
+Transform your String Schema implementation into a comprehensive **Pydantic utility** that eliminates verbose model definitions and enables string-based schema usage throughout the Python ecosystem.
 
 ## 🚀 Quick Start
 
 ```python
-from simple_schema import string_to_model, validate_to_dict, returns_dict
+from string_schema import string_to_model, validate_to_dict, returns_dict
 
 # Create Pydantic models from string schemas
 UserModel = string_to_model("name:string(min=1,max=100), email:email, age:int(0,120)?")
@@ -138,7 +138,7 @@ print(f"Recommendations: {compatibility['recommendations']}")
 
 ```python
 from fastapi import FastAPI
-from simple_schema import string_to_model, returns_dict
+from string_schema import string_to_model, returns_dict
 
 app = FastAPI()
 
@@ -220,7 +220,7 @@ class User(BaseModel):
 ### **After (String Schema Utility)**
 
 ```python
-from simple_schema import string_to_model
+from string_schema import string_to_model
 
 User = string_to_model("name:string(min=1,max=100), email:email, age:int(0,120)?, status:enum(active,inactive)")
 ```
@@ -229,15 +229,15 @@ User = string_to_model("name:string(min=1,max=100), email:email, age:int(0,120)?
 
 ## 🔄 Migration Guide
 
-### From Existing Simple Schema
+### From Existing String Schema
 
 ```python
 # Old way
-from simple_schema import string_to_pydantic
+from string_schema import string_to_pydantic
 UserModel = string_to_pydantic('User', "name:string, email:email")
 
 # New way (consistent naming)
-from simple_schema import string_to_model
+from string_schema import string_to_model
 UserModel = string_to_model("name:string, email:email", name='User')
 ```
 
@@ -251,7 +251,7 @@ class User(BaseModel):
     age: Optional[int] = None
 
 # New way
-from simple_schema import create_model
+from string_schema import create_model
 User = create_model("name:string, email:email, age:int?")
 ```
 
@@ -313,4 +313,4 @@ create_model("email:email, website:url")
 - **LLM Friendly**: Ideal for AI/ML data extraction workflows
 - **Developer Productivity**: Focus on business logic, not boilerplate
 
-Transform your development workflow with Simple Schema's Pydantic utilities! 🚀
+Transform your development workflow with String Schema's Pydantic utilities! 🚀

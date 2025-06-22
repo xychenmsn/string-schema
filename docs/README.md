@@ -1,6 +1,6 @@
-# Simple Schema Documentation
+# String Schema Documentation
 
-Welcome to the Simple Schema documentation! This directory contains comprehensive documentation for the Simple Schema library.
+Welcome to the String Schema documentation! This directory contains comprehensive documentation for the String Schema library.
 
 ## 🎯 Status: Production Ready
 
@@ -50,9 +50,9 @@ Welcome to the Simple Schema documentation! This directory contains comprehensiv
 
 ## Key Features
 
-Simple Schema provides:
+String Schema provides:
 
-- **Intuitive Syntax**: Define schemas using simple, readable syntax
+- **Intuitive Syntax**: Define schemas using simple, readable string syntax
 - **LLM-Optimized**: Designed to work seamlessly with Large Language Models
 - **Multiple Formats**: Export to JSON Schema, Pydantic models, OpenAPI specs
 - **Rich Validation**: Comprehensive validation with detailed error reporting
@@ -72,4 +72,4 @@ See the main repository for contribution guidelines and development setup.
 
 ## License
 
-Simple Schema is released under the MIT License. See the LICENSE file for details.
+String Schema is released under the MIT License. See the LICENSE file for details.
