@@ -153,7 +153,7 @@ result = validate_string_schema("name:string, age:int")
 **Solution**: Check validation details
 
 ```python
-from simple_schema.parsing import validate_string_schema
+from string_schema.parsing import validate_string_schema
 
 result = validate_string_schema("name:string, age:int")
 
@@ -256,7 +256,7 @@ fields_with_complex_unions = {
 **Solution**: Simplify unions or use OpenAPI-specific methods
 
 ```python
-from simple_schema.integrations.openapi import (
+from string_schema.integrations.openapi import (
     to_openapi_schema,
     validate_openapi_compatibility
 )
@@ -325,9 +325,9 @@ for schema in schema_generator(schema_strings):
 ```python
 import logging
 
-# Enable debug logging for Simple Schema
+# Enable debug logging for String Schema
 logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger('simple_schema')
+logger = logging.getLogger('string_schema')
 logger.setLevel(logging.DEBUG)
 
 # Now parsing will show debug information
@@ -337,7 +337,7 @@ schema = parse_string_schema("name:string, age:int")
 ### Inspect Parsed Results
 
 ```python
-from simple_schema.parsing import validate_string_schema
+from string_schema.parsing import validate_string_schema
 
 # Get detailed parsing information
 result = validate_string_schema("""
@@ -369,7 +369,7 @@ if result['errors']:
 
 ```python
 # Test individual parsing functions
-from simple_schema.parsing.string_parser import (
+from string_schema.parsing.string_parser import (
     _normalize_type_name,
     _parse_enum_values,
     _parse_type_definition

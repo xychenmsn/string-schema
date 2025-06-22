@@ -1,5 +1,5 @@
 """
-Core module for Simple Schema
+Core module for String Schema
 
 Contains the fundamental classes and functions for schema definition and building.
 """

@@ -1,11 +1,11 @@
 """
-Tests for core Simple Schema functionality
+Tests for core String Schema functionality
 """
 
 import pytest
-from simple_schema.core.fields import SimpleField
-from simple_schema.core.builders import simple_schema, list_of_objects_schema, simple_array_schema
-from simple_schema.core.validators import validate_schema, validate_simple_field
+from string_schema.core.fields import SimpleField
+from string_schema.core.builders import simple_schema, list_of_objects_schema, simple_array_schema
+from string_schema.core.validators import validate_schema, validate_simple_field
 
 
 class TestSimpleField:

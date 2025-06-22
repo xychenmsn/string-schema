@@ -125,7 +125,7 @@ with open('user_model.py', 'w') as f:
 ## Validation
 
 ```python
-from simple_schema import validate_string_syntax
+from string_schema import validate_string_syntax
 
 # Validate string schema syntax
 result = validate_string_syntax("name:string, email:email, age:int?")
@@ -143,7 +143,7 @@ print(f"Errors: {bad_result['errors']}")  # ['Unknown type: invalid_type']
 ### 1. Single Field
 
 ```python
-from simple_schema import string_to_json_schema
+from string_schema import string_to_json_schema
 
 schema = string_to_json_schema("name:string")
 print(schema)  # Basic string field schema

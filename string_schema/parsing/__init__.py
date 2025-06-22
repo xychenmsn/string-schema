@@ -1,5 +1,5 @@
 """
-Parsing module for Simple Schema
+Parsing module for String Schema
 
 Contains functionality for parsing string-based schema definitions.
 """

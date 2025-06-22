@@ -474,7 +474,7 @@ pytest tests/
 Contributions are welcome! The codebase is well-organized and documented:
 
 ```
-simple_schema/
+string_schema/
 ├── core/          # Core functionality (fields, builders, validators)
 ├── parsing/       # String parsing and syntax
 ├── integrations/  # Pydantic, JSON Schema, OpenAPI

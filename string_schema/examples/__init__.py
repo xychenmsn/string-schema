@@ -1,5 +1,5 @@
 """
-Examples module for Simple Schema
+Examples module for String Schema
 
 Contains built-in schema presets and common patterns.
 """

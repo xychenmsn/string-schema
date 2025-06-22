@@ -1,5 +1,5 @@
 """
-Integrations module for Simple Schema
+Integrations module for String Schema
 
 Contains integrations with external libraries and standards.
 """

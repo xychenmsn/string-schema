@@ -1,5 +1,5 @@
 """
-String-based schema parsing for Simple Schema
+String-based schema parsing for String Schema
 
 Contains functionality for parsing human-readable schema strings into JSON Schema.
 """

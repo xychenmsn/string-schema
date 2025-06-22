@@ -3,7 +3,7 @@ Tests for example schemas and recipes
 """
 
 import pytest
-from simple_schema.examples.presets import (
+from string_schema.examples.presets import (
     user_schema,
     product_schema,
     contact_schema,
@@ -11,7 +11,7 @@ from simple_schema.examples.presets import (
     event_schema,
     get_examples
 )
-from simple_schema.examples.recipes import (
+from string_schema.examples.recipes import (
     create_list_schema,
     create_enum_schema,
     create_union_schema,
@@ -126,7 +126,7 @@ class TestRecipeSchemas:
     
     def test_create_list_schema(self):
         """Test creating list schema"""
-        from simple_schema.core.fields import SimpleField
+        from string_schema.core.fields import SimpleField
         
         item_fields = {
             'name': SimpleField('string', 'Name field'),
@@ -159,7 +159,7 @@ class TestRecipeSchemas:
     
     def test_create_pagination_schema(self):
         """Test creating pagination schema"""
-        from simple_schema.core.fields import SimpleField
+        from string_schema.core.fields import SimpleField
         
         item_fields = {
             'name': SimpleField('string', 'Name field')
@@ -175,7 +175,7 @@ class TestRecipeSchemas:
     
     def test_create_api_response_schema(self):
         """Test creating API response schema"""
-        from simple_schema.core.fields import SimpleField
+        from string_schema.core.fields import SimpleField
         
         data_fields = {
             'message': SimpleField('string', 'Response message')
@@ -225,7 +225,7 @@ class TestSchemaValidation:
     
     def test_all_preset_schemas_valid(self):
         """Test that all preset schemas are valid JSON Schema"""
-        from simple_schema.core.validators import validate_schema
+        from string_schema.core.validators import validate_schema
         
         # Test all preset schemas with various options
         schemas_to_test = [
@@ -247,8 +247,8 @@ class TestSchemaValidation:
     
     def test_all_recipe_schemas_valid(self):
         """Test that all recipe schemas are valid"""
-        from simple_schema.core.validators import validate_schema
-        from simple_schema.core.fields import SimpleField
+        from string_schema.core.validators import validate_schema
+        from string_schema.core.fields import SimpleField
         
         # Test recipe schemas
         item_fields = {

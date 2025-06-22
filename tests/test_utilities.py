@@ -1,7 +1,7 @@
 """
-Tests for Simple Schema Pydantic Utility Functions
+Tests for String Schema Pydantic Utility Functions
 
-Tests the new utility functions that transform Simple Schema into a comprehensive
+Tests the new utility functions that transform String Schema into a comprehensive
 Pydantic utility for rapid development.
 """
 
@@ -16,7 +16,7 @@ try:
 except ImportError:
     HAS_PYDANTIC = False
 
-from simple_schema.utilities import (
+from string_schema.utilities import (
     string_to_model,
     validate_to_dict,
     validate_to_model,

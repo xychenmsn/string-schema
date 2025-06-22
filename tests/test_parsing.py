@@ -3,8 +3,8 @@ Tests for string parsing functionality
 """
 
 import pytest
-from simple_schema.parsing.string_parser import (
-    parse_string_schema, 
+from string_schema.parsing.string_parser import (
+    parse_string_schema,
     validate_string_schema,
     _normalize_type_name,
     _parse_enum_values

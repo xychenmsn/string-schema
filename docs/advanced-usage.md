@@ -7,7 +7,7 @@ This guide covers advanced patterns, optimization techniques, and complex use ca
 ### Enterprise User Management
 
 ```python
-from simple_schema import parse_string_schema
+from string_schema import parse_string_schema
 
 # Complete user management system
 user_system_schema = parse_string_schema("""
@@ -173,8 +173,8 @@ ecommerce_schema = parse_string_schema("""
 ### Building Modular Schemas
 
 ```python
-from simple_schema import SimpleField, simple_schema
-from simple_schema.examples.recipes import create_api_response_schema
+from string_schema import SimpleField, simple_schema
+from string_schema.examples.recipes import create_api_response_schema
 
 # Define reusable components
 address_fields = {
@@ -217,7 +217,7 @@ full_company_schema = simple_schema({
 
 ```python
 from functools import lru_cache
-from simple_schema import parse_string_schema
+from string_schema import parse_string_schema
 
 @lru_cache(maxsize=128)
 def get_cached_schema(schema_string: str):
@@ -333,7 +333,7 @@ def validate_schema_compatibility(old_schema: str, new_schema: str) -> dict:
 ### API Documentation Generation
 
 ```python
-from simple_schema.integrations.openapi import (
+from string_schema.integrations.openapi import (
     create_openapi_path_item,
     create_openapi_parameter,
     generate_openapi_spec
@@ -416,7 +416,7 @@ def _map_to_sql_type(field_def: dict) -> str:
 ```python
 import hypothesis
 from hypothesis import strategies as st
-from simple_schema import parse_string_schema
+from string_schema import parse_string_schema
 
 @hypothesis.given(
     name=st.text(min_size=1, max_size=100),

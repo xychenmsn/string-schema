@@ -1,8 +1,8 @@
 """
-Reverse conversion functions for Simple Schema
+Reverse conversion functions for String Schema
 
 This module provides functions to convert from various schema formats back to
-Simple Schema string syntax, completing the conversion matrix.
+String Schema string syntax, completing the conversion matrix.
 
 Conversion Matrix:
 - model_to_string()         # Pydantic model → String syntax
@@ -31,15 +31,15 @@ logger = logging.getLogger(__name__)
 
 def model_to_string(model: Type[BaseModel], include_name: bool = False) -> str:
     """
-    Convert Pydantic model to Simple Schema string syntax.
-    
+    Convert Pydantic model to String Schema string syntax.
+
     Args:
         model: Pydantic model class
         include_name: Whether to include model name in output
-        
+
     Returns:
-        String representation in Simple Schema syntax
-        
+        String representation in String Schema syntax
+
     Example:
         UserModel = create_model("name:string, email:email, age:int?")
         schema_str = model_to_string(UserModel)
@@ -86,14 +86,14 @@ def model_to_json_schema(model: Type[BaseModel]) -> Dict[str, Any]:
 
 def json_schema_to_string(json_schema: Dict[str, Any]) -> str:
     """
-    Convert JSON Schema to Simple Schema string syntax.
-    
+    Convert JSON Schema to String Schema string syntax.
+
     Args:
         json_schema: JSON Schema dictionary
-        
+
     Returns:
-        String representation in Simple Schema syntax
-        
+        String representation in String Schema syntax
+
     Example:
         json_schema = {"type": "object", "properties": {"name": {"type": "string"}}}
         schema_str = json_schema_to_string(json_schema)
@@ -110,14 +110,14 @@ def json_schema_to_string(json_schema: Dict[str, Any]) -> str:
 
 def openapi_to_string(openapi_schema: Dict[str, Any]) -> str:
     """
-    Convert OpenAPI schema to Simple Schema string syntax.
-    
+    Convert OpenAPI schema to String Schema string syntax.
+
     Args:
         openapi_schema: OpenAPI schema dictionary
-        
+
     Returns:
-        String representation in Simple Schema syntax
-        
+        String representation in String Schema syntax
+
     Example:
         openapi_schema = {"type": "object", "properties": {"name": {"type": "string"}}}
         schema_str = openapi_to_string(openapi_schema)

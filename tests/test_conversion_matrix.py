@@ -3,7 +3,7 @@ Tests for the complete conversion matrix functionality
 """
 
 import pytest
-from simple_schema import (
+from string_schema import (
     # Forward conversions
     string_to_json_schema,
     string_to_model,
@@ -11,14 +11,14 @@ from simple_schema import (
     string_to_openapi,
     json_schema_to_model,
     json_schema_to_openapi,
-    
+
     # Reverse conversions
     model_to_string,
     model_to_json_schema,
     json_schema_to_string,
     openapi_to_string,
     openapi_to_json_schema,
-    
+
     # Validation functions
     validate_string_syntax
 )

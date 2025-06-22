@@ -252,8 +252,8 @@ tmp/
 logs/
 *.log
 
-# Simple Schema specific
-.simple_schema_cache/
+# String Schema specific
+.string_schema_cache/
 *.schema.json
 test_output/
 benchmark_results/

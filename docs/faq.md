@@ -207,7 +207,7 @@ description: text(max=1000)         # Text with max length
 ### How do I generate Pydantic models?
 
 ```python
-from simple_schema.integrations.pydantic import create_pydantic_model
+from string_schema.integrations.pydantic import create_pydantic_model
 
 # Define fields
 fields = {
@@ -225,7 +225,7 @@ user = UserModel(name="John Doe", email="john@example.com")
 ### How do I generate OpenAPI documentation?
 
 ```python
-from simple_schema.integrations.openapi import to_openapi_schema
+from string_schema.integrations.openapi import to_openapi_schema
 
 # Convert to OpenAPI format
 openapi_schema = to_openapi_schema(fields, title="User Schema")
@@ -248,9 +248,9 @@ Yes! Generate Pydantic models and use them directly:
 
 ```python
 from fastapi import FastAPI
-from simple_schema.integrations.pydantic import create_pydantic_model
+from string_schema.integrations.pydantic import create_pydantic_model
 
-# Create Pydantic model from Simple Schema
+# Create Pydantic model from String Schema
 UserModel = create_pydantic_model('User', user_fields)
 
 app = FastAPI()
@@ -333,7 +333,7 @@ Enable debug logging and use validation:
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
-from simple_schema.parsing import validate_string_schema
+from string_schema.parsing import validate_string_schema
 
 result = validate_string_schema(your_schema)
 print("Valid:", result['valid'])

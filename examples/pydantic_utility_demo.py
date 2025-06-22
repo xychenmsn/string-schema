@@ -2,7 +2,7 @@
 Pydantic Utility Enhancement Demo
 
 This example demonstrates the new Pydantic utility functions that transform
-Simple Schema into a comprehensive Pydantic utility for rapid development.
+String Schema into a comprehensive Pydantic utility for rapid development.
 
 Features demonstrated:
 - create_model(): String schema → Pydantic model
@@ -12,7 +12,7 @@ Features demonstrated:
 - @returns_model: Decorator for model validation
 """
 
-from simple_schema import (
+from string_schema import (
     string_to_model,
     validate_to_dict,
     validate_to_model,
@@ -227,7 +227,7 @@ def demo_fastapi_integration():
 
 
 if __name__ == "__main__":
-    print("🎯 Simple Schema - Pydantic Utility Enhancement Demo")
+    print("🎯 String Schema - Pydantic Utility Enhancement Demo")
     print("=" * 80)
     print("Transform string schemas into powerful Pydantic utilities!")
     

@@ -1,5 +1,5 @@
 """
-Syntax definitions and examples for Simple Schema string parsing
+Syntax definitions and examples for String Schema string parsing
 
 Contains examples and documentation for the string-based schema syntax.
 """
@@ -92,7 +92,7 @@ def print_string_schema_examples():
 def get_syntax_help() -> str:
     """Get comprehensive syntax help for string schemas"""
     return """
-🚀 Simple Schema String Syntax Guide
+🚀 String Schema String Syntax Guide
 
 ## Basic Types
 - string, str, text    → String type

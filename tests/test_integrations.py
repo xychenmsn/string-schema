@@ -3,7 +3,7 @@ Tests for integration modules
 """
 
 import pytest
-from simple_schema.core.fields import SimpleField
+from string_schema.core.fields import SimpleField
 
 # Optional pydantic import
 try:
@@ -12,18 +12,18 @@ try:
 except ImportError:
     HAS_PYDANTIC = False
     BaseModel = None
-from simple_schema.integrations.pydantic import (
+from string_schema.integrations.pydantic import (
     create_pydantic_model,
     validate_pydantic_compatibility,
     generate_pydantic_code
 )
-from simple_schema.integrations.json_schema import (
+from string_schema.integrations.json_schema import (
     to_json_schema,
     to_json_schema_with_examples,
     validate_json_schema_compliance,
     optimize_json_schema
 )
-from simple_schema.integrations.openapi import (
+from string_schema.integrations.openapi import (
     to_openapi_schema,
     create_openapi_component,
     validate_openapi_compatibility
@@ -254,7 +254,7 @@ class TestIntegrationWorkflow:
     """Test complete integration workflows"""
     
     def test_simple_schema_to_all_formats(self):
-        """Test converting Simple Schema to all output formats"""
+        """Test converting String Schema to all output formats"""
         fields = {
             'id': SimpleField('string', 'User ID', format_hint='uuid'),
             'name': SimpleField('string', 'Full name', min_length=1, max_length=100),

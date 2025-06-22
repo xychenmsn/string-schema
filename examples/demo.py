@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Simple Schema Demo Script
+String Schema Demo Script
 
-This script demonstrates the organized Simple Schema library with all its features.
+This script demonstrates the organized String Schema library with all its features.
 """
 
 import sys
@@ -10,11 +10,11 @@ import os
 import json
 from typing import Dict, Any
 
-# Add the parent directory to the Python path so we can import simple_schema
+# Add the parent directory to the Python path so we can import string_schema
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Import the organized Simple Schema modules
-from simple_schema import (
+# Import the organized String Schema modules
+from string_schema import (
     string_to_json_schema,
     string_to_model,
     string_to_model_code,
@@ -23,18 +23,22 @@ from simple_schema import (
     parse_string_schema
 )
 
+# Import core classes
+from string_schema.core.fields import SimpleField
+from string_schema.core.builders import simple_schema, list_of_objects_schema, simple_array_schema
+
 # Import examples from examples module
-from simple_schema.examples.presets import (
+from string_schema.examples.presets import (
     user_schema,
     product_schema,
     contact_schema
 )
 
-from simple_schema.parsing import validate_string_schema, get_string_schema_examples
-from simple_schema.integrations.pydantic import create_pydantic_model
-from simple_schema.integrations.json_schema import to_json_schema
-from simple_schema.integrations.openapi import to_openapi_schema
-from simple_schema.examples.recipes import create_ecommerce_product_schema, create_blog_post_schema
+from string_schema.parsing import validate_string_schema, get_string_schema_examples
+from string_schema.integrations.pydantic import create_pydantic_model
+from string_schema.integrations.json_schema import to_json_schema
+from string_schema.integrations.openapi import to_openapi_schema
+from string_schema.examples.recipes import create_ecommerce_product_schema, create_blog_post_schema
 
 
 def print_header(title: str, level: int = 1):
@@ -50,8 +54,8 @@ def print_header(title: str, level: int = 1):
 
 
 def demo_core_functionality():
-    """Demonstrate core Simple Schema functionality"""
-    print_header("Core Simple Schema Functionality", 2)
+    """Demonstrate core String Schema functionality"""
+    print_header("Core String Schema Functionality", 2)
     
     # Create fields using SimpleField
     print("\n1. Creating fields with SimpleField:")
@@ -237,18 +241,18 @@ def demo_examples():
 
 
 def run_comprehensive_demo():
-    """Run the complete Simple Schema demonstration"""
-    print_header("🚀 Simple Schema - Organized Library Demo", 1)
-    
+    """Run the complete String Schema demonstration"""
+    print_header("🚀 String Schema - Organized Library Demo", 1)
+
     print("""
-This demo showcases the organized Simple Schema library with all modules
+This demo showcases the organized String Schema library with all modules
 properly structured and all enhanced features working correctly.
 
 🎯 Library Structure:
-• simple_schema/core/          → Core functionality (fields, builders, validators)
-• simple_schema/parsing/       → String parsing and syntax
-• simple_schema/integrations/  → Pydantic, JSON Schema, OpenAPI
-• simple_schema/examples/      → Built-in schemas and recipes
+• string_schema/core/          → Core functionality (fields, builders, validators)
+• string_schema/parsing/       → String parsing and syntax
+• string_schema/integrations/  → Pydantic, JSON Schema, OpenAPI
+• string_schema/examples/      → Built-in schemas and recipes
 • tests/                       → Comprehensive test suite
 • docs/                        → Complete documentation
 """)
@@ -292,7 +296,7 @@ properly structured and all enhanced features working correctly.
 📦 NEXT STEPS:
    1. Run tests: python -m pytest tests/
    2. Install package: pip install -e .
-   3. Import and use: from simple_schema import SimpleField, parse_string_schema
+   3. Import and use: from string_schema import SimpleField, parse_string_schema
    4. Check docs: docs/getting-started.md
 """)
 
