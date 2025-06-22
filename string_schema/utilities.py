@@ -93,7 +93,7 @@ def string_to_model(schema_str: str, name: Optional[str] = None) -> Type[BaseMod
                 if items_schema.get('type') == 'object':
                     # Array of objects: create nested model for items
                     from .integrations.pydantic import create_pydantic_from_json_schema
-                    ItemModel = create_pydantic_from_json_schema(f"{name}Item", items_schema)
+                    ItemModel = create_pydantic_from_json_schema(items_schema, f"{name}Item")
 
                     # Create the array model using RootModel
                     class ArrayModel(RootModel[List[ItemModel]]):
@@ -125,7 +125,7 @@ def string_to_model(schema_str: str, name: Optional[str] = None) -> Type[BaseMod
                 if items_schema.get('type') == 'object':
                     # Array of objects: create nested model for items
                     from .integrations.pydantic import create_pydantic_from_json_schema
-                    ItemModel = create_pydantic_from_json_schema(f"{name}Item", items_schema)
+                    ItemModel = create_pydantic_from_json_schema(items_schema, f"{name}Item")
 
                     # Create constraints for the array
                     constraints = {}
@@ -159,7 +159,7 @@ def string_to_model(schema_str: str, name: Optional[str] = None) -> Type[BaseMod
         else:
             # Regular object schema
             from .integrations.pydantic import create_pydantic_from_json_schema
-            return create_pydantic_from_json_schema(name, json_schema)
+            return create_pydantic_from_json_schema(json_schema, name)
 
     except Exception as e:
         raise ValueError(f"Failed to create model from schema '{schema_str}': {str(e)}") from e

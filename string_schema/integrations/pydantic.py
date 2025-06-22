@@ -111,41 +111,41 @@ def _simple_field_to_pydantic(field: SimpleField) -> tuple:
 
 
 # New consistent naming
-def json_schema_to_model(name: str, json_schema: Dict[str, Any]) -> Type[BaseModel]:
+def json_schema_to_model(json_schema: Dict[str, Any], name: str) -> Type[BaseModel]:
     """
     Create Pydantic model from JSON Schema dictionary.
 
     Args:
-        name: Name of the model class
         json_schema: JSON Schema dictionary
+        name: Name of the model class
 
     Returns:
         Dynamically created Pydantic model class
 
     Example:
-        UserModel = json_schema_to_model('User', json_schema)
+        UserModel = json_schema_to_model(json_schema, 'User')
     """
-    return create_pydantic_from_json_schema(name, json_schema)
+    return create_pydantic_from_json_schema(json_schema, name)
 
 
 # Legacy alias for backward compatibility
-def json_schema_to_pydantic(name: str, json_schema: Dict[str, Any]) -> Type[BaseModel]:
+def json_schema_to_pydantic(json_schema: Dict[str, Any], name: str) -> Type[BaseModel]:
     """
     Create Pydantic model from JSON Schema dictionary.
 
     DEPRECATED: Use json_schema_to_model() instead for consistent naming.
     """
-    return json_schema_to_model(name, json_schema)
+    return json_schema_to_model(json_schema, name)
 
 
-def create_pydantic_from_json_schema(name: str, json_schema: Dict[str, Any]) -> Type[BaseModel]:
+def create_pydantic_from_json_schema(json_schema: Dict[str, Any], name: str) -> Type[BaseModel]:
     """
     Create Pydantic model from JSON Schema.
-    
+
     Args:
-        name: Name of the model class
         json_schema: JSON Schema dictionary
-        
+        name: Name of the model class
+
     Returns:
         Dynamically created Pydantic model class
     """
@@ -184,7 +184,7 @@ def _json_schema_to_pydantic_field(field_schema: Dict[str, Any], required: bool 
         python_type = TypingUnion[tuple(union_types)]
     elif field_schema.get('type') == 'object':
         # Handle nested objects by creating a nested Pydantic model
-        nested_model = create_pydantic_from_json_schema(f"{parent_name}Nested", field_schema)
+        nested_model = create_pydantic_from_json_schema(field_schema, f"{parent_name}Nested")
         python_type = nested_model
     elif field_schema.get('type') == 'array':
         # Handle arrays
@@ -192,7 +192,7 @@ def _json_schema_to_pydantic_field(field_schema: Dict[str, Any], required: bool 
         if items_schema.get('type') == 'object':
             # Array of objects
             from typing import List
-            item_model = create_pydantic_from_json_schema(f"{parent_name}Item", items_schema)
+            item_model = create_pydantic_from_json_schema(items_schema, f"{parent_name}Item")
             python_type = List[item_model]
         else:
             # Array of primitives
@@ -441,7 +441,7 @@ def _string_to_model_with_name(name: str, schema_str: str) -> Type[BaseModel]:
 
     # Convert string to JSON Schema, then to Pydantic
     json_schema = parse_string_schema(schema_str)
-    return create_pydantic_from_json_schema(name, json_schema)
+    return create_pydantic_from_json_schema(json_schema, name)
 
 
 # Legacy alias for backward compatibility

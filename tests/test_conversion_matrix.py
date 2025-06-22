@@ -84,7 +84,7 @@ class TestForwardConversions:
             "required": ["name"]
         }
         
-        Model = json_schema_to_model("TestModel", json_schema)
+        Model = json_schema_to_model(json_schema, "TestModel")
         assert issubclass(Model, BaseModel)
         
         instance = Model(name="John", age=30)

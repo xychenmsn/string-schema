@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "string-schema"
-version = "0.1.2"
+version = "0.1.4"
 description = "A simple, LLM-friendly schema definition library for converting string syntax to structured schemas"
 readme = "README.md"
 license = "MIT"
@@ -57,8 +57,9 @@ Repository = "https://github.com/xychenmsn/string-schema"
 "Bug Reports" = "https://github.com/xychenmsn/string-schema/issues"
 Changelog = "https://github.com/xychenmsn/string-schema/releases"
 
-[tool.setuptools]
-packages = ["string_schema"]
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["string_schema*"]
 
 [tool.setuptools.package-data]
 string_schema = ["py.typed"]
