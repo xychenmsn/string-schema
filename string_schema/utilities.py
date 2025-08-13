@@ -15,6 +15,7 @@ Key Functions:
 
 import functools
 import uuid
+from datetime import datetime, timezone
 from typing import Any, Dict, Type, Union, Callable, Optional, List
 import logging
 
@@ -28,6 +29,48 @@ except ImportError:
     ValidationError = None
 
 logger = logging.getLogger(__name__)
+
+
+def _ensure_timezone_aware_dict(data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Ensure all datetime values in a dictionary have timezone information.
+
+    This function recursively processes dictionaries and lists to add UTC timezone
+    information to naive datetime objects, ensuring consistent API responses.
+
+    Args:
+        data: Dictionary that may contain datetime values
+
+    Returns:
+        Dictionary with timezone-aware datetime values converted to ISO format
+    """
+    if not isinstance(data, dict):
+        return data
+
+    result = {}
+    for key, value in data.items():
+        if isinstance(value, datetime):
+            # Add UTC timezone to naive datetime objects
+            if value.tzinfo is None:
+                value = value.replace(tzinfo=timezone.utc)
+            # Convert to ISO format string for consistent API responses
+            result[key] = value.isoformat()
+        elif isinstance(value, dict):
+            # Recursively process nested dictionaries
+            result[key] = _ensure_timezone_aware_dict(value)
+        elif isinstance(value, list):
+            # Process lists that may contain dictionaries or datetime objects
+            result[key] = [
+                _ensure_timezone_aware_dict(item) if isinstance(item, dict)
+                else item.isoformat() if isinstance(item, datetime) and item.tzinfo is None
+                else item.replace(tzinfo=timezone.utc).isoformat() if isinstance(item, datetime)
+                else item
+                for item in value
+            ]
+        else:
+            result[key] = value
+
+    return result
 
 
 def string_to_model(schema_str: str, name: Optional[str] = None) -> Type[BaseModel]:
@@ -218,13 +261,21 @@ def validate_to_dict(data: Union[Dict[str, Any], Any], schema_str: str) -> Union
             try:
                 # Try Pydantic v2 RootModel style
                 validated_instance = TempModel(data)
-                # Return the validated array data
-                return validated_instance.model_dump() if hasattr(validated_instance, 'model_dump') else validated_instance.dict()
+                # Return the validated array data with timezone-aware conversion
+                result_data = validated_instance.model_dump() if hasattr(validated_instance, 'model_dump') else validated_instance.dict()
+                # Process array items for timezone-aware datetime conversion
+                if isinstance(result_data, list):
+                    return [_ensure_timezone_aware_dict(item) if isinstance(item, dict) else item for item in result_data]
+                return result_data
             except:
                 # Fallback to Pydantic v1 style
                 validated_instance = TempModel(__root__=data)
-                # Return the validated array data
-                return validated_instance.model_dump()['__root__'] if hasattr(validated_instance, 'model_dump') else validated_instance.dict()['__root__']
+                # Return the validated array data with timezone-aware conversion
+                result_data = validated_instance.model_dump()['__root__'] if hasattr(validated_instance, 'model_dump') else validated_instance.dict()['__root__']
+                # Process array items for timezone-aware datetime conversion
+                if isinstance(result_data, list):
+                    return [_ensure_timezone_aware_dict(item) if isinstance(item, dict) else item for item in result_data]
+                return result_data
         else:
             # Handle different input types for object schemas
             if isinstance(data, dict):
@@ -236,11 +287,14 @@ def validate_to_dict(data: Union[Dict[str, Any], Any], schema_str: str) -> Union
                 # Try direct validation
                 validated_instance = TempModel(data)
 
-            # Return as dictionary (use model_dump for Pydantic v2, fallback to dict for v1)
+            # Return as dictionary with timezone-aware datetime handling
             if hasattr(validated_instance, 'model_dump'):
-                return validated_instance.model_dump()
+                result_dict = validated_instance.model_dump()
             else:
-                return validated_instance.dict()
+                result_dict = validated_instance.dict()
+
+            # Ensure timezone-aware datetime conversion for consistent API responses
+            return _ensure_timezone_aware_dict(result_dict)
 
     except ValidationError as e:
         # Re-raise the original validation error

@@ -41,6 +41,7 @@ ProfileModel = string_to_model("name:string, profile:{bio:text?, avatar:url?, so
 
 - ✅ Basic types: `string`, `int`, `number`, `boolean`
 - ✅ Special types: `email`, `url`, `uuid`, `datetime`, `phone`
+- ✅ **Timezone-aware datetime**: Automatic UTC conversion for consistent API responses
 - ✅ Arrays: `[string]`, `[{name:string, price:number}]`
 - ✅ Nested objects: `profile:{bio:text?, avatar:url?}`
 - ✅ Enums: `status:enum(active,inactive,pending)`
@@ -56,6 +57,11 @@ ProfileModel = string_to_model("name:string, profile:{bio:text?, avatar:url?, so
 # API endpoint usage
 user_dict = validate_to_dict(raw_data, "name:string, email:email, age:int?")
 # Returns: {"name": "John", "email": "john@example.com", "age": 30}
+
+# Automatic timezone handling for datetime fields
+event_data = {"name": "Meeting", "start_time": datetime(2025, 8, 13, 14, 30)}
+event_dict = validate_to_dict(event_data, "name:string, start_time:datetime")
+# Returns: {"name": "Meeting", "start_time": "2025-08-13T14:30:00+00:00"}
 
 # Array validation
 events = validate_to_dict(raw_events, "[{user_id:uuid, event:enum(login,logout,purchase)}]")
@@ -78,6 +84,60 @@ profile = validate_to_model(data, "name:string, profile:{bio:text?, avatar:url?}
 if profile.profile:
     print(profile.profile.bio)
 ```
+
+## 🌍 Timezone Handling
+
+String Schema automatically ensures all datetime fields include timezone information for consistent, timezone-aware API responses.
+
+### **Automatic UTC Conversion**
+
+```python
+from datetime import datetime
+from string_schema import validate_to_dict
+
+# Naive datetime gets UTC timezone
+data = {"event": "Meeting", "time": datetime(2025, 8, 13, 14, 30)}
+result = validate_to_dict(data, "event:string, time:datetime")
+# Returns: {"event": "Meeting", "time": "2025-08-13T14:30:00+00:00"}
+
+# Timezone-aware datetime preserved
+from datetime import timezone
+utc_time = datetime(2025, 8, 13, 14, 30, tzinfo=timezone.utc)
+data = {"event": "UTC Meeting", "time": utc_time}
+result = validate_to_dict(data, "event:string, time:datetime")
+# Returns: {"event": "UTC Meeting", "time": "2025-08-13T14:30:00+00:00"}
+```
+
+### **Nested and Array Support**
+
+```python
+# Nested datetime handling
+user_data = {
+    "name": "John",
+    "profile": {
+        "created_at": datetime(2025, 8, 13, 10, 0),
+        "last_login": datetime(2025, 8, 13, 12, 0)
+    }
+}
+result = validate_to_dict(user_data, "name:string, profile:{created_at:datetime, last_login:datetime}")
+# All nested datetime fields get timezone info automatically
+
+# Array datetime handling
+events = [
+    {"id": 1, "timestamp": datetime(2025, 8, 13, 9, 0)},
+    {"id": 2, "timestamp": datetime(2025, 8, 13, 10, 0)}
+]
+result = validate_to_dict(events, "[{id:int, timestamp:datetime}]")
+# All timestamps in array items get timezone info
+```
+
+### **Benefits**
+
+- ✅ **Consistent API Responses**: All datetime fields include timezone information
+- ✅ **Global Application Support**: Works correctly across all timezones
+- ✅ **Frontend Compatibility**: JavaScript automatically handles timezone conversion
+- ✅ **Zero Configuration**: Works automatically for all datetime fields
+- ✅ **Performance Optimized**: Minimal overhead with maximum benefit
 
 ## 🎨 Decorators
 

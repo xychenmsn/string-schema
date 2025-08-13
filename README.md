@@ -103,6 +103,7 @@ String Schema takes human-readable text descriptions and converts them into stru
 - **🤖 LLM Data Extraction**: Define extraction schemas that LLMs can easily follow
 - **🔧 API Development**: Generate Pydantic models and OpenAPI docs from simple syntax
 - **✅ Data Validation**: Create robust validation schemas with minimal code
+- **🌍 Timezone-Aware APIs**: Automatic UTC conversion for consistent datetime handling
 - **📋 Configuration**: Define and validate application configuration schemas
 - **🔄 Data Transformation**: Convert between different schema formats
 
@@ -127,6 +128,12 @@ print(user_dict)  # {"name": "John Doe", "email": "john@example.com", "age": 25}
 user_model = validate_to_model(raw_data, "name:string, email:email, age:int?")
 print(user_model.name)  # "John Doe" - Full type safety
 print(user_model.age)   # 25 - Converted to int
+
+# 🌍 Automatic timezone handling for datetime fields
+from datetime import datetime
+event_data = {"name": "Meeting", "start_time": datetime(2025, 8, 13, 14, 30)}
+event_dict = validate_to_dict(event_data, "name:string, start_time:datetime")
+print(event_dict)  # {"name": "Meeting", "start_time": "2025-08-13T14:30:00+00:00"}
 ```
 
 ### 🎨 Function Decorators
